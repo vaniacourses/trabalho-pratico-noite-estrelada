@@ -1,4 +1,4 @@
-DOC editável: https://docs.google.com/document/d/1xyYK01rRsiiZWlqoW-P2um0DU6zoHaY1RvqfDSb7NKs/edit?tab=t.rm4x6q8d9inc
+Documento de arquitetura de software editável: https://docs.google.com/document/d/1xyYK01rRsiiZWlqoW-P2um0DU6zoHaY1RvqfDSb7NKs/edit?tab=t.rm4x6q8d9inc
 
 PARA ABRIR ARQUIVOS XML (Contém Diagramas)
 
