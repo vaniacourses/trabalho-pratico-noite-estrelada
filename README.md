@@ -14,8 +14,6 @@ Clique em "Open Existing Diagram"
 
 Selecione o arquivo:
 
-.drawio
-
-.xml
+.drawio ou .xml
 
 Clique em Abrir.
