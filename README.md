@@ -13,6 +13,9 @@ Device → se o arquivo está no seu computador
 Clique em "Open Existing Diagram"
 
 Selecione o arquivo:
+
 .drawio
+
 .xml
+
 Clique em Abrir.
