@@ -1,4 +1,5 @@
 **Documento de arquitetura de software editável:** https://docs.google.com/document/d/1xyYK01rRsiiZWlqoW-P2um0DU6zoHaY1RvqfDSb7NKs/edit?tab=t.rm4x6q8d9inc
+**Slide da apresentação 1:** https://www.canva.com/design/DAHIL6FPiqU/OhhVjs6hrGGa2ZWOSvujWw/edit
 
 **PARA ABRIR ARQUIVOS XML (Contém Diagramas)**
 
