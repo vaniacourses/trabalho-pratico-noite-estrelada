@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum EstadoLeitor {
+  INCOMPLETO
+  REGULAR
+  EM_PUNICAO
+  BANIDO
+}
+
+enum EstadoExemplar {
+  DISPONIVEL
+  EMPRESTADO
+  AFASTADO
+  RESERVADO
+}
+
+enum EstadoEmprestimo {
+  CORRENTE
+  ATRASADO
+  FINALIZADO
+}
+
+enum EstadoReserva {
+  EM_ESPERA
+  BLOQUEANTE
+  FINALIZADA
+}
+
+// Models
+model Leitor {
+  id                String      @id @default(cuid())
+  nome              String
+  email             String      @unique
+  senha             String
+  estado            EstadoLeitor @default(INCOMPLETO)
+  dataCriacao       DateTime    @default(now())
+  dataAtualizacao   DateTime    @updatedAt
+
+  emprestimos       Emprestimo[]
+  reservas          Reserva[]
+
+  @@map("leitores")
+}
+
+model Publicacao {
+  id                String      @id @default(cuid())
+  isbn              String      @unique
+  titulo            String
+  dataCriacao       DateTime    @default(now())
+
+  exemplares        Exemplar[]
+  reservas          Reserva[]
+
+  @@map("publicacoes")
+}
+
+model Exemplar {
+  id                String      @id @default(cuid())
+  idPublicacao      String
+  estado            EstadoExemplar @default(DISPONIVEL)
+  dataCriacao       DateTime    @default(now())
+  dataAtualizacao   DateTime    @updatedAt
+
+  publicacao        Publicacao  @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  emprestimos       Emprestimo[]
+
+  @@map("exemplares")
+  @@index([idPublicacao])
+}
+
+model Emprestimo {
+  id                String      @id @default(cuid())
+  idLeitor          String
+  idExemplar        String
+  dataInicio        DateTime    @default(now())
+  dataExpiracao     DateTime
+  dataFinalizacao   DateTime?
+  estado            EstadoEmprestimo @default(CORRENTE)
+  dataCriacao       DateTime    @default(now())
+  dataAtualizacao   DateTime    @updatedAt
+
+  leitor            Leitor      @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  exemplar          Exemplar    @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
+
+  @@map("emprestimos")
+  @@index([idLeitor])
+  @@index([idExemplar])
+}
+
+model Reserva {
+  id                String      @id @default(cuid())
+  idLeitor          String
+  idPublicacao      String
+  dataExpiracao     DateTime
+  estado            EstadoReserva @default(EM_ESPERA)
+  dataCriacao       DateTime    @default(now())
+  dataAtualizacao   DateTime    @updatedAt
+
+  leitor            Leitor      @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  publicacao        Publicacao  @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+
+  @@map("reservas")
+  @@index([idLeitor])
+  @@index([idPublicacao])
+}
