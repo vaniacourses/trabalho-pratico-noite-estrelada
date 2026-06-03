@@ -43,7 +43,7 @@ model Leitor {
   nome             String
   cpf              String
   dataDeNascimento DateTime
-  email            String       @unique
+  email            String
   senha            String
   estado           EstadoLeitor @default(INCOMPLETO)
   dataCriacao      DateTime     @default(now())
