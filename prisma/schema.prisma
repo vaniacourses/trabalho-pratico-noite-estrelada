@@ -39,78 +39,80 @@ enum EstadoReserva {
 
 // Models
 model Leitor {
-  id                String      @id @default(cuid())
-  nome              String
-  email             String      @unique
-  senha             String
-  estado            EstadoLeitor @default(INCOMPLETO)
-  dataCriacao       DateTime    @default(now())
-  dataAtualizacao   DateTime    @updatedAt
+  id               String       @id @default(cuid())
+  nome             String
+  cpf              String
+  dataDeNascimento DateTime
+  email            String       @unique
+  senha            String
+  estado           EstadoLeitor @default(INCOMPLETO)
+  dataCriacao      DateTime     @default(now())
+  dataAtualizacao  DateTime     @updatedAt
 
-  emprestimos       Emprestimo[]
-  reservas          Reserva[]
+  emprestimos Emprestimo[]
+  reservas    Reserva[]
 
   @@map("leitores")
 }
 
 model Publicacao {
-  id                String      @id @default(cuid())
-  isbn              String      @unique
-  titulo            String
-  dataCriacao       DateTime    @default(now())
+  id          String   @id @default(cuid())
+  isbn        String   @unique
+  titulo      String
+  dataCriacao DateTime @default(now())
 
-  exemplares        Exemplar[]
-  reservas          Reserva[]
+  exemplares Exemplar[]
+  reservas   Reserva[]
 
   @@map("publicacoes")
 }
 
 model Exemplar {
-  id                String      @id @default(cuid())
-  idPublicacao      String
-  estado            EstadoExemplar @default(DISPONIVEL)
-  dataCriacao       DateTime    @default(now())
-  dataAtualizacao   DateTime    @updatedAt
+  id              String         @id @default(cuid())
+  idPublicacao    String
+  estado          EstadoExemplar @default(DISPONIVEL)
+  dataCriacao     DateTime       @default(now())
+  dataAtualizacao DateTime       @updatedAt
 
-  publicacao        Publicacao  @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
-  emprestimos       Emprestimo[]
+  publicacao  Publicacao   @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  emprestimos Emprestimo[]
 
-  @@map("exemplares")
   @@index([idPublicacao])
+  @@map("exemplares")
 }
 
 model Emprestimo {
-  id                String      @id @default(cuid())
-  idLeitor          String
-  idExemplar        String
-  dataInicio        DateTime    @default(now())
-  dataExpiracao     DateTime
-  dataFinalizacao   DateTime?
-  estado            EstadoEmprestimo @default(CORRENTE)
-  dataCriacao       DateTime    @default(now())
-  dataAtualizacao   DateTime    @updatedAt
+  id              String           @id @default(cuid())
+  idLeitor        String
+  idExemplar      String
+  dataInicio      DateTime         @default(now())
+  dataExpiracao   DateTime
+  dataFinalizacao DateTime?
+  estado          EstadoEmprestimo @default(CORRENTE)
+  dataCriacao     DateTime         @default(now())
+  dataAtualizacao DateTime         @updatedAt
 
-  leitor            Leitor      @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
-  exemplar          Exemplar    @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
+  leitor   Leitor   @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  exemplar Exemplar @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
 
-  @@map("emprestimos")
   @@index([idLeitor])
   @@index([idExemplar])
+  @@map("emprestimos")
 }
 
 model Reserva {
-  id                String      @id @default(cuid())
-  idLeitor          String
-  idPublicacao      String
-  dataExpiracao     DateTime
-  estado            EstadoReserva @default(EM_ESPERA)
-  dataCriacao       DateTime    @default(now())
-  dataAtualizacao   DateTime    @updatedAt
+  id              String        @id @default(cuid())
+  idLeitor        String
+  idPublicacao    String
+  dataExpiracao   DateTime
+  estado          EstadoReserva @default(EM_ESPERA)
+  dataCriacao     DateTime      @default(now())
+  dataAtualizacao DateTime      @updatedAt
 
-  leitor            Leitor      @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
-  publicacao        Publicacao  @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  leitor     Leitor     @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  publicacao Publicacao @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
 
-  @@map("reservas")
   @@index([idLeitor])
   @@index([idPublicacao])
+  @@map("reservas")
 }
