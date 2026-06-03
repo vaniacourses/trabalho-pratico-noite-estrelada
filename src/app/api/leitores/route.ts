@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from "next/server";
 import {LeitorService} from "@/src/services/leitorService.ts";
 import type {IErroAplicacao} from "@/src/types";
 
+// POST /api/users/
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();

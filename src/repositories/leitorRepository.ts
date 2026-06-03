@@ -29,7 +29,6 @@ export class LeitorRepository {
         cpf?: string,
         dataDeNascimento?: Date
     ): Promise<Leitor> {
-        // only include optional fields when provided to avoid storing empty strings
         const data: any = {
             nome,
             senha,
