@@ -31,7 +31,7 @@ export class EmprestimoRepository {
   /**
    * Verifica se o leitor está em estado válido para fazer empréstimos
    */
-  async verificarLeitorVálido(idLeitor: string): Promise<boolean> {
+  async verificarLeitorValido(idLeitor: string): Promise<boolean> {
     const leitor = await prisma.leitor.findUnique({
       where: { id: idLeitor },
     });
@@ -64,9 +64,9 @@ export class EmprestimoRepository {
    * Tudo isso acontece atomicamente - ou ambos ocorrem ou nenhum
    */
   async criarEmprestimo(
-    idLeitor: string,
-    idExemplar: string,
-    dataExpiracao: Date
+      idLeitor: string,
+      idExemplar: string,
+      dataExpiracao: Date
   ): Promise<Emprestimo> {
     return prisma.$transaction(async (tx) => {
       // 1. Criar o empréstimo
@@ -93,7 +93,7 @@ export class EmprestimoRepository {
    * Finaliza um empréstimo e libera o exemplar
    */
   async finalizarEmprestimo(
-    idEmprestimo: string
+      idEmprestimo: string
   ): Promise<Emprestimo> {
     return prisma.$transaction(async (tx) => {
       // 1. Encontrar o empréstimo
