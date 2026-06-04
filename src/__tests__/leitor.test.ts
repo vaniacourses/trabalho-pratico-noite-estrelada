@@ -7,9 +7,9 @@
  * Este arquivo é apenas para referência de como estruturar testes
  */
 
-import { LeitorService } from "@/services/leitorService";
-import { LeitorRepository } from "@/repositories/leitorRepository";
-import type { Leitor, EstadoLeitor } from "@prisma/client";
+import {LeitorService} from "@/services/leitorService";
+import {LeitorRepository} from "@/repositories/leitorRepository";
+import type {Leitor, EstadoLeitor} from "@prisma/client";
 
 // Mock do repositório para testes
 class MockLeitorRepository extends LeitorRepository {
