@@ -4,147 +4,164 @@
 
 /* Base Styles */
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+    html {
+        scroll-behavior: smooth;
+    }
 
-  body {
-    @apply bg-brand-bg text-brand-text;
-    font-family: system-ui, -apple-system, sans-serif;
-  }
+    body {
+        @apply bg-brand-bg text-brand-text;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-semibold text-brand-text;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-semibold text-brand-text;
+    }
 
-  h1 {
-    @apply text-4xl font-bold;
-  }
+    h1 {
+        @apply text-4xl font-bold;
+    }
 
-  h2 {
-    @apply text-3xl font-bold;
-  }
+    h2 {
+        @apply text-3xl font-bold;
+    }
 
-  h3 {
-    @apply text-2xl font-semibold;
-  }
+    h3 {
+        @apply text-2xl font-semibold;
+    }
 
-  a {
-    @apply text-brand-primary hover:text-brand-primary-dark transition-colors;
-  }
+    a {
+        @apply text-brand-primary hover:text-brand-primary-dark transition-colors;
+    }
 
-  button {
-    @apply transition-colors duration-200;
-  }
+    button {
+        @apply transition-colors duration-200;
+    }
 
-  input,
-  textarea,
-  select {
-    @apply transition-colors duration-200;
-  }
+    input,
+    textarea,
+    select {
+        @apply transition-colors duration-200;
+    }
 }
 
 /* Component Styles */
 @layer components {
-  .btn-primary {
-    @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
-  }
 
-  .btn-secondary {
-    @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
-  }
+    .alert-success {
+        @apply bg-green-50 border-green-500 text-green-700
+    }
 
-  .btn-outline {
-    @apply border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white font-semibold py-3 px-6 rounded transition-colors duration-200;
-  }
+    .alert-fail {
+        @apply bg-red-50 border-red-500 text-red-700
+    }
 
-  .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 rounded bg-white text-brand-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all;
-  }
+    .btn-edit {
+        @apply bg-green-700 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+    }
 
-  .card {
-    @apply bg-white rounded-lg shadow-soft p-6;
-  }
+    .btn-delete {
+        @apply bg-red-700 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+    }
 
-  .card-secondary {
-    @apply bg-brand-secondary/10 rounded-lg p-6 border border-brand-secondary/20;
-  }
+    .btn-primary {
+        @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+    }
 
-  .text-gradient {
-    @apply bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent;
-  }
+    .btn-secondary {
+        @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+    }
+
+    .btn-outline {
+        @apply border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white font-semibold py-3 px-6 rounded transition-colors duration-200;
+    }
+
+    .input-field {
+        @apply w-full px-4 py-3 border border-gray-300 rounded bg-white text-brand-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all;
+    }
+
+    .card {
+        @apply bg-white rounded-lg shadow-soft p-6;
+    }
+
+    .card-secondary {
+        @apply bg-brand-secondary/10 rounded-lg p-6 border border-brand-secondary/20;
+    }
+
+    .text-gradient {
+        @apply bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent;
+    }
 }
 
 /* Utility Classes */
 @layer utilities {
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
 
-  .flex-between {
-    @apply flex items-center justify-between;
-  }
+    .flex-between {
+        @apply flex items-center justify-between;
+    }
 
-  .container-premium {
-    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
+    .container-premium {
+        @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
 
-  .transition-smooth {
-    @apply transition-all duration-300 ease-in-out;
-  }
+    .transition-smooth {
+        @apply transition-all duration-300 ease-in-out;
+    }
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .animate-slideInLeft {
-  animation: slideInLeft 0.3s ease-in-out;
+    animation: slideInLeft 0.3s ease-in-out;
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+    background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
+    background: var(--color-primary);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
+    background: var(--color-primary-dark);
 }

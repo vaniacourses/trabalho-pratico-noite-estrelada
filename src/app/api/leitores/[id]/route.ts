@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { LeitorService } from "@/services/leitorService";
 import type { IErroAplicacao } from "@/types";
 
-// This file lives at /api/leitores/[id]/route.ts and correctly represents
-// operations on a single Leitor resource: GET, PATCH (update) and DELETE.
-// Using Next.js App Router dynamic route, it's preferable to read the
-// dynamic segment from the route `params` (second argument) instead of
-// relying on query string `?id=...`.
-
 // GET /api/leitores/:id
 export async function GET(
   request: NextRequest,
@@ -156,7 +150,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         sucesso: true,
-        mensagem: "Leitor deletado",
+        mensagem: "Leitor deletado com sucesso!",
       },
       { status: 200 }
     );
