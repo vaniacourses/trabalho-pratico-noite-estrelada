@@ -1,12 +1,20 @@
-import {NextRequest, NextResponse} from "next/server";
-import {LeitorService} from "@/services/leitorService";
-import type {IErroAplicacao} from "@/types";
+import { NextRequest, NextResponse } from "next/server";
+import { LeitorService } from "@/services/leitorService";
+import type { IErroAplicacao } from "@/types";
 
-// GET /api/users/:id
-export async function GET(request: NextRequest) {
+// This file lives at /api/leitores/[id]/route.ts and correctly represents
+// operations on a single Leitor resource: GET, PATCH (update) and DELETE.
+// Using Next.js App Router dynamic route, it's preferable to read the
+// dynamic segment from the route `params` (second argument) instead of
+// relying on query string `?id=...`.
+
+// GET /api/leitores/:id
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id?: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = params?.id || new URL(request.url).searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
@@ -60,11 +68,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-//PATCH /api/users/:id
-export async function PATCH(request: NextRequest) {
+// PATCH /api/leitores/:id
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id?: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = params?.id || new URL(request.url).searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
@@ -120,11 +130,13 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// DELETE /api/users/:id
-export async function DELETE(request: NextRequest) {
+// DELETE /api/leitores/:id
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id?: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const id = params?.id || new URL(request.url).searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
