@@ -11,7 +11,7 @@
 /// <reference types="jest" />
 import '@testing-library/jest-dom';
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import type { Leitor } from "@prisma/client";
 
 // Mock do container (usando caminho relativo) - Usar função para evitar hoisting
@@ -192,6 +192,30 @@ describe("LeitoresPage", () => {
       expect(excluirBotoes.length).toBe(leitoresValidos.length);
     });
 
+    it("✅ deve chamar deletarLeitor ao clicar botão 'Excluir'", async () => {
+      mockedLeitorService.obterLeitores.mockResolvedValue(leitoresValidos);
+      mockedLeitorService.deletarLeitor.mockResolvedValue(leitoresValidos[0]);
+
+      render(await LeitoresPage());
+
+      // Contar número inicial de linhas (header + dados)
+      let linhasAntesDelete = screen.getAllByRole("row");
+      const numLinhasAntesDelete = linhasAntesDelete.length;
+      expect(numLinhasAntesDelete).toBe(3); // 1 header + 2 leitores
+
+      // Encontrar e clicar no primeiro botão 'Excluir'
+      const excluirBotoes = screen.getAllByText("Excluir");
+      const primeiroBotaoExcluir = excluirBotoes[0];
+
+      fireEvent.click(primeiroBotaoExcluir);
+
+      // Verificar que deletarLeitor foi chamado com o ID correto
+      expect(mockedLeitorService.deletarLeitor).toHaveBeenCalledWith(
+        leitoresValidos[0].id
+      );
+      expect(mockedLeitorService.deletarLeitor).toHaveBeenCalledTimes(1);
+    });
+
     it("✅ deve linkar para página de edição corretamente", async () => {
       mockedLeitorService.obterLeitores.mockResolvedValue(leitoresValidos);
 
@@ -296,13 +320,13 @@ describe("LeitoresPage", () => {
     });
 
     it("✅ deve misturar leitores completos e incompletos", async () => {
-      const leitorescMistos: Leitor[] = [
+      const leitoresMistos: Leitor[] = [
         leitoresValidos[0],
         leitorSemDados,
         leitoresValidos[1],
       ];
 
-      mockedLeitorService.obterLeitores.mockResolvedValue(leitorescMistos);
+      mockedLeitorService.obterLeitores.mockResolvedValue(leitoresMistos);
 
       render(await LeitoresPage());
 
