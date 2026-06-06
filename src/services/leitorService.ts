@@ -1,6 +1,6 @@
 import {LeitorRepository} from "@/repositories/leitorRepository";
-import { Leitor, EstadoLeitor } from "@prisma/client";
-import type {ICriarLeitorDTO, ICriarLeitorResponse, IErroAplicacao} from "@/types";
+import {EstadoLeitor, Leitor} from "@prisma/client";
+import type {IErroAplicacao, ILeitorDTO, ILeitorResponse} from "@/types";
 
 export class LeitorService {
     private repository: LeitorRepository;
@@ -27,7 +27,7 @@ export class LeitorService {
         return this.repository.obterLeitores()
     }
 
-    async criarLeitor(dto: ICriarLeitorDTO): Promise<ICriarLeitorResponse> {
+    async criarLeitor(dto: ILeitorDTO): Promise<ILeitorResponse> {
 
         const {
             nome,
@@ -41,27 +41,34 @@ export class LeitorService {
         const estado = dto.estado ?? this.avaliarEstadoDoLeitor([nome, senha, email, cpf, dataDeNascimento]);
 
         const leitor = await this.repository.criarLeitor(
-            nome,
-            senha,
-            estado,
-            email,
-            cpf,
-            dataDeNascimento
+            {
+                nome,
+                senha,
+                estado,
+                email,
+                cpf,
+                dataDeNascimento
+            }
         );
 
         return this.mapearParaResponse(leitor);
     }
 
-    async atualizarLeitor(id: string, data: {
-        nome?: string,
-        cpf?: string,
-        email?: string,
-        senha?: string,
-        dataDeNascimento?: Date
-    }): Promise<Leitor> {
+    async atualizarLeitor(id: string, data: ILeitorDTO): Promise<Leitor> {
         try {
-            return await this.repository.atualizarLeitor(id, data as Partial<Leitor>);
+            const {
+                nome,
+                email,
+                cpf,
+                dataDeNascimento,
+            } = data
+
+            data.estado = this.avaliarEstadoDoLeitor([nome, email, cpf, dataDeNascimento])
+
+            return await this.repository.atualizarLeitor(id, data);
+
         } catch (error: any) {
+            console.log(error.message)
             throw this.criarErro(
                 "ERRO_ATUALIZAR_LEITOR",
                 error.message || "Erro ao atualizar leitor",
@@ -82,8 +89,9 @@ export class LeitorService {
         }
     }
 
-    private avaliarEstadoDoLeitor<T>(dados: (T | undefined | null) []): EstadoLeitor {
-        return dados.every((e) => e != null) ? ("REGULAR" as EstadoLeitor) : ("INCOMPLETO" as EstadoLeitor);
+    private avaliarEstadoDoLeitor<T>(dados: (T) []): EstadoLeitor {
+        return dados.every((e) => e != null && e !== "") ?
+            ("REGULAR" as EstadoLeitor) : ("INCOMPLETO" as EstadoLeitor);
     }
 
     private criarErro(codigo: string, mensagem: string, statusHttp: number): IErroAplicacao {
@@ -94,7 +102,7 @@ export class LeitorService {
         };
     }
 
-    private mapearParaResponse(leitor: any): ICriarLeitorResponse {
+    private mapearParaResponse(leitor: any): ILeitorResponse {
         return {
             id: leitor.id,
             nome: leitor.nome,
@@ -104,4 +112,5 @@ export class LeitorService {
             dataDeNascimento: leitor.dataDeNascimento,
         };
     }
+
 }

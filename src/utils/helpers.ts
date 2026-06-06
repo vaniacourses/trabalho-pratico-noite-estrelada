@@ -8,8 +8,8 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost
  * Formata uma data para formato brasilero (DD/MM/YYYY)
  */
 export function formatDate(date: Date | string): string {
-  const d = new Date(date);
-  return d.toLocaleDateString("pt-BR");
+    const d = new Date(date);
+    return d.toLocaleDateString("pt-BR");
 }
 
 /**

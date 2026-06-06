@@ -1,6 +1,6 @@
 import {EstadoLeitor} from "@prisma/client";
 
-export interface ICriarLeitorDTO {
+export interface ILeitorDTO {
     nome: string;
     senha: string;
     email?: string;
@@ -9,7 +9,7 @@ export interface ICriarLeitorDTO {
     dataDeNascimento?: Date;
 }
 
-export interface ICriarLeitorResponse {
+export interface ILeitorResponse {
     id: string;
     nome: string;
     email: string;

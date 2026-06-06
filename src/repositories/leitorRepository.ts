@@ -1,5 +1,5 @@
 import {prisma} from "@/lib/prisma"
-import type {Leitor, EstadoLeitor} from "@prisma/client";
+import type {Leitor} from "@prisma/client";
 
 export class LeitorRepository {
     async obterLeitorPorId(id: string): Promise<Leitor | null> {
@@ -22,38 +22,28 @@ export class LeitorRepository {
     }
 
     async criarLeitor(
-        nome: string,
-        senha: string,
-        estado?: EstadoLeitor | string,
-        email?: string,
-        cpf?: string,
-        dataDeNascimento?: Date
+        data: any
     ): Promise<Leitor> {
-        const data: any = {
-            nome,
-            senha,
-        };
 
-        if (estado) data.estado = estado as EstadoLeitor;
-        if (email) data.email = email;
-        if (cpf) data.cpf = cpf;
-        if (dataDeNascimento) data.dataDeNascimento = dataDeNascimento;
+        data.email = data.email?.trim() || undefined
+        data.cpf = data.cpf?.trim() || undefined
+        data.dataDeNascimento = data.dataDeNascimento?.trim() || undefined
 
-        return await prisma.leitor.create({
+        return prisma.leitor.create({
             data,
         });
     }
 
     async atualizarLeitor(id: string, data: Partial<Leitor>): Promise<Leitor> {
-        return await prisma.leitor.update({
-            where: { id },
+        return prisma.leitor.update({
+            where: {id},
             data,
         });
     }
 
     async deletarLeitor(id: string) {
-        return await prisma.leitor.delete({
-            where: { id },
+        return prisma.leitor.delete({
+            where: {id},
         });
     }
 }

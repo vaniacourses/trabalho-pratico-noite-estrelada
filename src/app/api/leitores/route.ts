@@ -47,7 +47,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nome, senha, email, cpf, estado, dataDeNascimento } = body;
+    const { nome, senha } = body;
 
     if (!nome || !senha) {
       return NextResponse.json(
@@ -62,12 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     const leitor = await leitorService.criarLeitor({
-      nome,
-      senha,
-      cpf,
-      email,
-      estado,
-      dataDeNascimento,
+     ...body
     });
 
     return NextResponse.json(

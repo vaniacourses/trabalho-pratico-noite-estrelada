@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {Leitor} from "@prisma/client";
 import {formatDate} from "@/utils/helpers.ts";
@@ -93,6 +93,7 @@ export default function LeitoresPage() {
 
     return (
         <main>
+
             {alert.show && (
                 <div
                     className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${
@@ -120,65 +121,69 @@ export default function LeitoresPage() {
                     </button>
                 </div>
             )}
-
-            <h1 className="text-3xl text-center font-bold mt-6">
-                Lista de Leitores
-            </h1>
-            <div className={"items-center mb-6"}>
-                <div className={"flex justify-end items-center mb-4 mr-6"}>
-                    <button className={"btn-edit"}>Adicionar Leitor</button>
-                </div>
-                <div className="bg-white flex justify-center rounded shadow p-6">
-                    <table className="border-collapse w-3/4">
-                        <thead>
-                        <tr className="border-b">
-                            <th className="text-center p-4">Nome</th>
-                            <th className="text-center p-4">Email</th>
-                            <th className="text-center p-4">CPF</th>
-                            <th className="text-center p-4">Data de Nascimento</th>
-                            <th className="text-center p-4">Estado</th>
-                            <th className="text-center p-4">Ações</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {leitores.map((leitor) => (
-                            <tr key={leitor.id}>
-                                <td className="p-5 text-center">{leitor.nome}</td>
-                                <td className="p-5 text-center">{leitor.email || "-"}</td>
-                                <td className="p-5 text-center">{leitor.cpf || "-"}</td>
-                                <td className="p-5 text-center">{formatDate(leitor.dataDeNascimento) || "-"}</td>
-                                <td className="p-5 text-center">{leitor.estado}</td>
-                                <td className="p-5 text-center">
-                                    <Link href={`/leitores/${leitor.id}/editar`}>
-                                        <button className="btn-edit mr-6">
-                                            Editar
-                                        </button>
-                                    </Link>
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() => handleExcluir(leitor.id)}
-                                        disabled={loadingId === leitor.id}
-                                    >
-                                        {loadingId === leitor.id ? (
-                                            <>
-                                                Deletando...
-                                            </>
-                                        ) : (
-                                            'Excluir'
-                                        )}
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-
+            <div>
+                <h1 className="text-3xl text-center font-bold mt-6">
+                    Lista de Leitores
+                </h1>
+                <div className={"items-center mb-6"}>
+                    <Link href={"leitores/create"}>
+                        <div className={"flex justify-end items-center mb-4 mr-6"}>
+                            <button className={"btn-edit"}>Adicionar Leitor</button>
+                        </div>
+                    </Link>
                     {leitores.length === 0 && (
                         <div className="p-8 text-center text-gray-500">
-                            Nenhum leitor encontrado.
+                            <h1>Nenhum leitor encontrado.</h1>
                         </div>
                     )}
-
+                    {leitores.length > 0 && (
+                        <div className="bg-white flex justify-center rounded shadow p-6">
+                            <table className="border-collapse w-3/4">
+                                <thead>
+                                <tr className="border-b">
+                                    <th className="text-center p-4">Nome</th>
+                                    <th className="text-center p-4">Email</th>
+                                    <th className="text-center p-4">CPF</th>
+                                    <th className="text-center p-4">Data de Nascimento</th>
+                                    <th className="text-center p-4">Estado</th>
+                                    <th className="text-center p-4">Ações</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {leitores.map((leitor) => (
+                                    <tr key={leitor.id}>
+                                        <td className="p-5 text-center">{leitor.nome}</td>
+                                        <td className="p-5 text-center">{leitor.email || "-"}</td>
+                                        <td className="p-5 text-center">{leitor.cpf || "-"}</td>
+                                        <td className="p-5 text-center">{leitor.dataDeNascimento ?
+                                            formatDate(leitor.dataDeNascimento) : "-"}</td>
+                                        <td className="p-5 text-center">{leitor.estado}</td>
+                                        <td className="p-5 text-center">
+                                            <Link href={`/leitores/${leitor.id}/edit`}>
+                                                <button className="btn-edit mr-6">
+                                                    Editar
+                                                </button>
+                                            </Link>
+                                            <button
+                                                className="btn-delete"
+                                                onClick={() => handleExcluir(leitor.id)}
+                                                disabled={loadingId === leitor.id}
+                                            >
+                                                {loadingId === leitor.id ? (
+                                                    <>
+                                                        Deletando...
+                                                    </>
+                                                ) : (
+                                                    'Excluir'
+                                                )}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             </div>
         </main>

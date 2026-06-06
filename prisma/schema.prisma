@@ -41,9 +41,9 @@ enum EstadoReserva {
 model Leitor {
   id               String       @id @default(cuid())
   nome             String
-  cpf              String
-  dataDeNascimento DateTime
-  email            String
+  cpf              String?      @unique
+  dataDeNascimento DateTime?
+  email            String?
   senha            String
   estado           EstadoLeitor @default(INCOMPLETO)
   dataCriacao      DateTime     @default(now())

@@ -62,8 +62,8 @@ export async function GET(
   }
 }
 
-// PATCH /api/leitores/:id
-export async function PATCH(
+// PUT /api/leitores/:id
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id?: string } }
 ) {
