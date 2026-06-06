@@ -164,8 +164,6 @@ describe("LeitorService", () => {
                 // email, cpf, dataDeNascimento não fornecidos
             });
 
-            console.log(resultado)
-
             expect(resultado).toBeDefined();
             expect(resultado.estado).toBe("INCOMPLETO");
         });

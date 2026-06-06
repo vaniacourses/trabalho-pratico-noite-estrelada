@@ -68,7 +68,6 @@ export class LeitorService {
             return await this.repository.atualizarLeitor(id, data);
 
         } catch (error: any) {
-            console.log(error.message)
             throw this.criarErro(
                 "ERRO_ATUALIZAR_LEITOR",
                 error.message || "Erro ao atualizar leitor",

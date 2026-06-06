@@ -54,7 +54,7 @@ describe("LeitoresPage - Client Component", () => {
             cpf: "987.654.321-00",
             dataDeNascimento: new Date("1995-06-20"),
             senha: "hashed_pass_2",
-            estado: "INCOMPLETO",
+            estado: "REGULAR",
             dataCriacao: new Date(),
             dataAtualizacao: new Date(),
         },
@@ -223,13 +223,14 @@ describe("LeitoresPage - Client Component", () => {
             render(<LeitoresPage/>);
 
             const links = await screen.findAllByRole("link");
+            console.log(links)
             const editLinks = links.filter((link) =>
-                link.getAttribute("href")?.includes("/editar")
+                link.getAttribute("href")?.includes("/edit")
             );
 
             expect(editLinks.length).toBe(leitoresValidos.length);
-            expect(editLinks[0].getAttribute("href")).toBe("/leitores/leitor-1/editar");
-            expect(editLinks[1].getAttribute("href")).toBe("/leitores/leitor-2/editar");
+            expect(editLinks[0].getAttribute("href")).toBe("/leitores/leitor-1/edit");
+            expect(editLinks[1].getAttribute("href")).toBe("/leitores/leitor-2/edit");
         });
     });
 
