@@ -157,7 +157,7 @@ describe("LeitoresPage - Client Component", () => {
             expect(excluirBotoes.length).toBe(leitoresValidos.length);
         });
 
-        it("✅ deve mostrar spinner e chamar DELETE ao clicar botão 'Excluir'", async () => {
+        it("✅ deve chamar DELETE ao clicar botão 'Excluir'", async () => {
             (global.fetch as jest.Mock)
                 .mockResolvedValueOnce({
                     ok: true,

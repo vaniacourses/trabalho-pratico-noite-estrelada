@@ -4,6 +4,8 @@ import {useState} from "react";
 import {Input} from "@/components/ui/Input.tsx";
 import {Button} from "@/components/ui/Button.tsx";
 import {Leitor} from "@prisma/client";
+import Link from "next/link";
+import {CardFooter} from "@/components/ui/Card.tsx";
 
 interface LeitorFormProps {
     initialData?: Leitor;
@@ -160,11 +162,16 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
-            <div className={"flex justify-center mx-auto"}>
-                <Button type="submit" disabled={isSubmitting} className={"btn btn-edit"}>
+            <div className={"flex justify-around mx-auto"}>
+                <Button type="submit" disabled={isSubmitting} className={"btn btn-edit mt-3 w-3/4"}>
                     {isSubmitting ? "Salvando..." : "Salvar"}
                 </Button>
             </div>
+            <CardFooter>
+                <Link href={"/leitores"} className={"btn btn-delete ml-2"}>
+                    {"Voltar"}
+                </Link>
+            </CardFooter>
         </form>
     );
 }

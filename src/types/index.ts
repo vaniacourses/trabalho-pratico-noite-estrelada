@@ -1,8 +1,8 @@
 import {EstadoLeitor} from "@prisma/client";
 
 export interface ILeitorDTO {
-    nome: string;
-    senha: string;
+    nome?: string;
+    senha?: string;
     email?: string;
     cpf?: string;
     estado?: EstadoLeitor;
