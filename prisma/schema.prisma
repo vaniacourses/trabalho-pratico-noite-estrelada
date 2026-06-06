@@ -64,14 +64,45 @@ model Midia {
   tipo        TipoDeMidia @default(LIVRO)
   titulo      String
   dataCriacao DateTime    @default(now())
-  isbn        String?     @unique
-  autor       String?
-  artista     String?
 
   exemplares Exemplar[]
   reservas   Reserva[]
+  livro      Livro?
+  cd         CD?
+  dvd        DVD?
 
   @@map("midias")
+}
+
+model Livro {
+  midiaId String @id
+  autor   String
+  isbn    String @unique
+  midia   Midia  @relation(fields: [midiaId], references: [id])
+
+  @@map("livros")
+}
+
+model CD {
+  midiaId String   @id
+  artista String
+  faixas  String[]
+  duracao Int
+  midia   Midia    @relation(fields: [midiaId], references: [id])
+
+  @@map("cds")
+}
+
+model DVD {
+  midiaId        String   @id
+  titulo         String
+  diretor        String
+  codigoDeRegiao String
+  legendas       String[]
+  duracao        Int
+  midia          Midia    @relation(fields: [midiaId], references: [id])
+
+  @@map("dvds")
 }
 
 model Exemplar {
@@ -81,8 +112,8 @@ model Exemplar {
   dataCriacao     DateTime       @default(now())
   dataAtualizacao DateTime       @updatedAt
 
-  midia        Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
-  emprestimos  Emprestimo[]
+  midia       Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
+  emprestimos Emprestimo[]
 
   @@index([idMidia])
   @@map("exemplares")
@@ -110,14 +141,14 @@ model Emprestimo {
 model Reserva {
   id              String        @id @default(cuid())
   idLeitor        String
-  idMidia   String
-  dataMidia   DateTime
+  idMidia         String
+  dataMidia       DateTime
   estado          EstadoReserva @default(EM_ESPERA)
   dataCriacao     DateTime      @default(now())
   dataAtualizacao DateTime      @updatedAt
 
-  leitor     Leitor     @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
-  publicacao Midia @relation(fields: [idMidia], references: [id], onDelete: Cascade)
+  leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
 
   @@index([idLeitor])
   @@index([idMidia])
