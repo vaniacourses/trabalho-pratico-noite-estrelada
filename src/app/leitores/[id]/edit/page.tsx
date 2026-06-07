@@ -35,6 +35,11 @@ export default function EditLeitorPage() {
                 throw new Error("Failed to update leitor");
             }
 
+            sessionStorage.setItem(
+                'successMessage',
+                'Leitor atualizado com sucesso!'
+            );
+
             router.push("/leitores"); // Redirect to leitores list after creation
         } catch (error) {
             console.error("Error creating leitor:", error);
@@ -66,6 +71,5 @@ export default function EditLeitorPage() {
                 </CardContent>
             </Card>
         </div>
-    )
-        ;
+    );
 }

@@ -1,17 +1,17 @@
 "use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/Card.tsx";
-import { LeitorForm } from "@/components/leitores/LeitorForm";
-import { Leitor } from "@prisma/client";
+import {useState} from "react";
+import {useRouter} from "next/navigation";
+import {Card, CardContent} from "@/components/ui/Card.tsx";
+import {LeitorForm} from "@/components/leitores/LeitorForm";
+import {Leitor} from "@prisma/client";
 
 export default function CreateLeitorPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleCreateLeitor = async (
-        data: Omit<Leitor, "id" | "estado" |"dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
+        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
     ) => {
         setIsSubmitting(true);
         try {
@@ -26,6 +26,11 @@ export default function CreateLeitorPage() {
             if (!response.ok) {
                 throw new Error("Failed to create leitor");
             }
+
+            sessionStorage.setItem(
+                'successMessage',
+                'Leitor criado com sucesso!'
+            );
 
             router.push("/leitores"); // Redirect to leitores list after creation
         } catch (error) {

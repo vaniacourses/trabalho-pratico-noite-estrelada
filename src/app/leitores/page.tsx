@@ -21,6 +21,21 @@ export default function LeitoresPage() {
         fetchLeitores();
     }, []);
 
+
+    useEffect(() => {
+        const message = sessionStorage.getItem('successMessage');
+
+        if (message) {
+            setAlert({
+                show: true,
+                message,
+                tipo: 'sucesso',
+            });
+
+            sessionStorage.removeItem('successMessage');
+        }
+    }, []);
+
     const fetchLeitores = async () => {
         try {
             setIsLoading(true);
