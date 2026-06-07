@@ -24,6 +24,12 @@ export interface IDvdDTO extends IMidiaDTO {
     duracao: number
 }
 
+export interface IMidiaResponse {
+    id: string;
+    tipo: string;
+    titulo: string;
+}
+
 export interface IRealizarEmprestimoDTO {
     idLeitor: string;
     idExemplar: string;

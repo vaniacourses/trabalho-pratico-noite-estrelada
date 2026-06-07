@@ -55,8 +55,18 @@ export class MidiaService {
         }
     }
 
-    async buscarMidia(id: string) {
+    async obterMidiaPorId(id: string) {
+        const midia = await this.repository.obterMidiaPorId(id);
 
+        if (!midia) {
+            throw this.criarErro(
+                "LEITOR_NAO_ENCONTRADO",
+                "Leitor não encontrado",
+                404
+            );
+        }
+
+        return midia;
     }
 
     private detectarFactory = {
