@@ -23,12 +23,4 @@ export class Cd extends Midia {
             duracao: this.duracao,
         }
     }
-
-    public criar() {
-        return MidiaService.criarCd(this.getDados())
-    }
-
-    public atualizar() {
-        return MidiaService.atualizarCd(this.getDados())
-    }
 }

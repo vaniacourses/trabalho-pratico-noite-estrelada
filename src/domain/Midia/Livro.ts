@@ -23,12 +23,4 @@ export class Livro extends Midia {
             paginas: this.paginas
         }
     }
-
-    public criar() {
-        return MidiaService.criarLivro(this.getDados())
-    }
-
-    public atualizar() {
-        return MidiaService.atualizarLivro(this.getDados())
-    }
 }

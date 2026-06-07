@@ -4,7 +4,7 @@ import {Midia} from "@/src/domain/Midia/Midia.ts";
 import {Cd} from "@/src/domain/Midia/Cd.ts";
 
 export class CdCreator extends MidiaCreator {
-    public registrarMidia(dados: ICdDTO): Midia {
+    public midiaFactory(dados: ICdDTO): Midia {
         return new Cd(dados);
     }
 }

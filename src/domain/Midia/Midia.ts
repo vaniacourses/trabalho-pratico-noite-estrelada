@@ -11,7 +11,6 @@ export abstract class Midia {
         this.dataCriacao = dados.dataCriacao;
     }
 
-    abstract criar(): any;
+    abstract getDados(): any;
 
-    abstract atualizar(): any;
 }
