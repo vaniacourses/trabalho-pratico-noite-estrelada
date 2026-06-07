@@ -78,6 +78,7 @@ model Livro {
   midiaId String @id
   autor   String
   isbn    String @unique
+  paginas Int
   midia   Midia  @relation(fields: [midiaId], references: [id])
 
   @@map("livros")
@@ -95,7 +96,6 @@ model CD {
 
 model DVD {
   midiaId        String   @id
-  titulo         String
   diretor        String
   codigoDeRegiao String
   legendas       String[]

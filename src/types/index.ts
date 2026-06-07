@@ -5,10 +5,23 @@ export interface IMidiaDTO {
     dataCriacao: Date
 }
 
-export interface ILivroDTO extends IMidiaDTO{
+export interface ILivroDTO extends IMidiaDTO {
     autor: string;
     isbn: string;
     paginas: number;
+}
+
+export interface ICdDTO extends IMidiaDTO {
+    artista: string;
+    faixas: string[];
+    duracao: number;
+}
+
+export interface IDvdDTO extends IMidiaDTO {
+    diretor: String
+    codigoDeRegiao: String
+    legendas: String[]
+    duracao: number
 }
 
 export interface IRealizarEmprestimoDTO {
