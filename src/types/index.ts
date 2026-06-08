@@ -1,13 +1,13 @@
 export interface IMidiaDTO {
     id?: string;
-    tipo: string;
+    tipo: "LIVRO" | "DVD" | "CD";
     titulo: string;
     dataCriacao: Date
 }
 
 export interface ILivroDTO extends IMidiaDTO {
     autor: string;
-    isbn: string;
+    isbn?: string;
     paginas: number;
 }
 
@@ -18,9 +18,9 @@ export interface ICdDTO extends IMidiaDTO {
 }
 
 export interface IDvdDTO extends IMidiaDTO {
-    diretor: String
-    codigoDeRegiao: String
-    legendas: String[]
+    diretor: string
+    codigoDeRegiao: string
+    legendas: string[]
     duracao: number
 }
 

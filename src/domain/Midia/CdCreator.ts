@@ -1,10 +1,9 @@
-import {MidiaCreator} from "@/src/domain/Midia/MidiaCreator.ts";
+import {MidiaFactory} from "@/src/domain/Midia/MidiaFactory.ts";
 import {ICdDTO} from "@/src/types";
-import {Midia} from "@/src/domain/Midia/Midia.ts";
-import {Cd} from "@/src/domain/Midia/Cd.ts";
+import {CdProduct} from "@/src/domain/Midia/CdProduct.ts";
 
-export class CdCreator extends MidiaCreator {
-    public midiaFactory(dados: ICdDTO): Midia {
-        return new Cd(dados);
+export class CdCreator extends MidiaFactory {
+    public factoryCall(dados: ICdDTO):CdProduct {
+        return new CdProduct(dados);
     }
 }

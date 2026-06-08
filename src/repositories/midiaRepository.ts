@@ -1,26 +1,49 @@
-import {IMidiaDTO} from "@/src/types";
-import {Midia} from "@/src/domain/Midia/Midia.ts";
+import {prisma} from "@/src/lib/prisma.ts";
+import {Midia} from "@prisma/client";
 
 export class MidiaRespository {
 
     async obterMidias(): Promise<Midia[]> {
-
+        return prisma.midia.findMany(
+            {
+                include: {
+                    livro: true,
+                    cd: true,
+                    dvd: true
+                }
+            }
+        );
     }
 
-    async obteMidiaPorId(string: id) {
+    async obterMidiaPorId(id: string): Promise<Midia | null> {
+        return prisma.midia.findUnique({
+            where: {id},
+            include: {
+                livro: true,
+                cd: true,
+                dvd: true
+            }
 
+        })
     }
 
-    async criarMidia() {
-
+    async criarMidia(midia: any): Promise<Midia> {
+        return prisma.midia.create({data: midia});
     }
 
-    async atualizarMidia(string: id, dto: IMidiaDTO) {
-
+    async atualizarMidia(id: string, data: Partial<Midia>): Promise<Midia> {
+        return prisma.midia.update(
+            {
+                where: {id},
+                data
+            }
+        )
     }
 
     async deletarMidia(id: string) {
-
+        return prisma.midia.delete({
+            where: {id},
+        });
     }
 
 

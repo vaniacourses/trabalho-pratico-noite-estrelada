@@ -1,10 +1,10 @@
 import {IDvdDTO} from "@/src/types";
-import {MidiaCreator} from "@/src/domain/Midia/MidiaCreator.ts";
-import {Midia} from "@/src/domain/Midia/Midia.ts";
-import {Dvd} from "@/src/domain/Midia/Dvd.ts";
+import {MidiaFactory} from "@/src/domain/Midia/MidiaFactory.ts";
+import {MidiaProduct} from "@/src/domain/Midia/MidiaProduct.ts";
+import {DvdProduct} from "@/src/domain/Midia/DvdProduct.ts";
 
-export class DvdCreator extends MidiaCreator {
-    public midiaFactory(dados: IDvdDTO): Midia {
-        return new Dvd(dados);
+export class DvdCreator extends MidiaFactory {
+    public factoryCall(dados: IDvdDTO): MidiaProduct {
+        return new DvdProduct(dados);
     }
 }

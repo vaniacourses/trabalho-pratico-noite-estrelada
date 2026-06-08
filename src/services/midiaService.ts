@@ -1,10 +1,9 @@
 import {MidiaRespository} from "@/src/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/src/types";
-import {Midia} from "@/src/domain/Midia/Midia.ts";
 import {LivroCreator} from "@/src/domain/Midia/LivroCreator.ts";
 import {CdCreator} from "@/src/domain/Midia/CdCreator.ts";
 import {DvdCreator} from "@/src/domain/Midia/DvdCreator.ts";
-import {TipoDeMidia} from "@prisma/client";
+import {Midia, TipoDeMidia} from "@prisma/client";
 
 export class MidiaService {
     private repository: MidiaRespository;
@@ -21,7 +20,7 @@ export class MidiaService {
 
         const {tipo} = dto;
         const factory = this.detectarFactory[tipo as TipoDeMidia];
-        const registro = factory.getDados(dto);
+        const registro = factory.gravar(dto);
         const midia = await this.repository.criarMidia(registro);
         return this.mapearParaResponse(midia);
     }
@@ -31,12 +30,12 @@ export class MidiaService {
         try {
             const {tipo} = dto;
             const factory = this.detectarFactory[tipo as TipoDeMidia];
-            const registro = factory.getDados(dto);
+            const registro = factory.atualizar(dto);
             return await this.repository.atualizarMidia(id, registro);
         } catch (error: any) {
             throw this.criarErro(
                 "ERRO_ATUALIZAR_MIDIA",
-                error.message || "Erro ao atualizar leitor",
+                error.message || "Erro ao atualizar midia",
                 400
             );
         }
