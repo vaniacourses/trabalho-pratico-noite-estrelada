@@ -9,7 +9,7 @@ export class MidiaRespository {
                 include: {
                     livro: true,
                     cd: true,
-                    dvd: true
+                    dvd: true,
                 }
             }
         );
@@ -21,7 +21,7 @@ export class MidiaRespository {
             include: {
                 livro: true,
                 cd: true,
-                dvd: true
+                dvd: true,
             }
 
         })

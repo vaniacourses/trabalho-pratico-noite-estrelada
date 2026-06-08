@@ -1,8 +1,12 @@
+import {Exemplar, Reserva} from "@prisma/client";
+
 export interface IMidiaDTO {
     id?: string;
     tipo: "LIVRO" | "DVD" | "CD";
     titulo: string;
     dataCriacao: Date
+    exemplares?: Exemplar[]
+    reservas?: Reserva[]
 }
 
 export interface ILivroDTO extends IMidiaDTO {
