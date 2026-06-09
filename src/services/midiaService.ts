@@ -17,11 +17,10 @@ export class MidiaService {
     }
 
     async criarMidia(dto: IMidiaDTO): Promise<IMidiaResponse> {
-
         const {tipo} = dto;
         const factory = this.detectarFactory[tipo as TipoDeMidia];
-        const registro = factory.gravar(dto);
-        const midia = await this.repository.criarMidia(registro);
+        const product = factory.gravar(dto);
+        const midia = await this.repository.criarMidia(product);
         return this.mapearParaResponse(midia);
     }
 

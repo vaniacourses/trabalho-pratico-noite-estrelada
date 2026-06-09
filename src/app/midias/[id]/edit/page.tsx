@@ -2,14 +2,14 @@
 
 import {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
-import {Card, CardContent} from "@/components/ui/Card.tsx";
-import {LeitorForm} from "@/components/leitores/LeitorForm";
-import {Leitor} from "@prisma/client";
+import {MidiaForm} from "@/src/components/midias/MidiaForm.tsx";
+import {Midia} from "@prisma/client";
+import {Card, CardContent} from "@/src/components/ui/Card.tsx";
 
-export default function EditLeitorPage() {
+export default function EditMidiaPage() {
     const {id} = useParams()
     const router = useRouter();
-    const [leitor, setLeitor] = useState<any>(null)
+    const [midia, setLeitor] = useState<any>(null)
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -18,12 +18,12 @@ export default function EditLeitorPage() {
             .then(setLeitor);
     }, [id]);
 
-    const handleUpdateLeitor = async (
-        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
+    const handleUpdateMidia = async (
+        data: Omit<Midia, "id" | "estado" | "dataCriacao" | "emprestimos" | "reservas">
     ) => {
         setIsSubmitting(true);
         try {
-            const response = await fetch(`/api/leitores/${id}/`, {
+            const response = await fetch(`/api/midias/${id}/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -32,42 +32,42 @@ export default function EditLeitorPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to update leitor");
+                throw new Error("Failed to update midia");
             }
 
             sessionStorage.setItem(
                 'successMessage',
-                'Leitor atualizado com sucesso!'
+                'Mídia atualizado com sucesso!'
             );
 
-            router.push("/leitores"); // Redirect to leitores list after creation
+            router.push("/midias");
         } catch (error) {
-            console.error("Error creating leitor:", error);
-            alert("Erro ao atualizar leitor. Verifique o console para mais detalhes.");
+            console.error("Error creating midia:", error);
+            alert("Erro ao atualizar mídia. Verifique o console para mais detalhes.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
 
-    if (!leitor) {
+    if (!midia) {
         return (<div>Carregando...</div>);
     }
     return (
         <div className="w-1/4 mx-auto">
             <h1 className="text-3xl text-center font-bold mt-6 mb-5">
-                Atualizar Leitor
+                Atualizar Mídia
             </h1>
             <Card>
                 <CardContent>
                     <div>
                     </div>
-                    <LeitorForm
+                    <MidiaForm
                         initialData={
-                            leitor.dados
+                            midia.dados
                         }
                         formMode={"edit"}
-                        onSubmit={handleUpdateLeitor} isSubmitting={isSubmitting}/>
+                        onSubmit={handleUpdateMidia} isSubmitting={isSubmitting}/>
                 </CardContent>
             </Card>
         </div>

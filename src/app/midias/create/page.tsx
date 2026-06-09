@@ -2,9 +2,9 @@
 
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Card, CardContent} from "@/components/ui/Card.tsx";
 import {Midia} from "@prisma/client";
 import {MidiaForm} from "@/src/components/midias/MidiaForm.tsx";
+import {Card, CardContent} from "@/src/components/ui/Card.tsx";
 
 export default function CreateMidiaPage() {
     const router = useRouter();

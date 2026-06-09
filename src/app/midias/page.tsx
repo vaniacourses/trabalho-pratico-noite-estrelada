@@ -158,8 +158,6 @@ export default function MidiasPage() {
                                     <th className="text-center p-4">Título</th>
                                     <th className="text-center p-4">Tipo</th>
                                     <th className="text-center p-4">Data de Criação</th>
-                                    <th className="text-center p-4">Exemplares</th>
-                                    <th className="text-center p-4">Reservas</th>
                                     <th className="text-center p-4">Ações</th>
                                 </tr>
                                 </thead>
@@ -169,8 +167,6 @@ export default function MidiasPage() {
                                         <td className="p-5 text-center">{midia.titulo}</td>
                                         <td className="p-5 text-center">{midia.tipo}</td>
                                         <td className="p-5 text-center">{formatDate(midia.dataCriacao)}</td>
-                                        <td className="p-5 text-center">{midia.exemplares}</td>
-                                        <td className="p-5 text-center">{midia.reservas}</td>
                                         <td className="p-5 text-center">
                                             <Link href={`/midias/${midia.id}/edit`}>
                                                 <button className="btn-edit mr-6">

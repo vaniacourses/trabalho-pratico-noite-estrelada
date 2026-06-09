@@ -1,14 +1,11 @@
 import {IDvdDTO, IMidiaDTO} from "@/src/types";
 import {MidiaProduct} from "@/src/domain/Midia/MidiaProduct.ts";
-import {TipoDeMidia} from "@prisma/client";
 
 export class DvdProduct extends MidiaProduct {
 
     constructor(midia: IMidiaDTO, dvd: IDvdDTO) {
         super(midia);
-        midia.tipo = TipoDeMidia.DVD;
-        midia.dados = dvd;
-
+        this.dados = dvd;
     }
 
     public gravar(): any {

@@ -1,11 +1,11 @@
-import {DadosDTO, IMidiaDTO} from "@/src/types";
+import {ICdDTO, IDvdDTO, IMidiaDTO, IPublicacaoDTO} from "@/src/types";
 
 export abstract class MidiaProduct {
     protected id?: string;
     protected titulo: string;
     protected tipo: "PUBLICACAO" | "DVD" | "CD";
     protected dataCriacao: Date;
-    protected dados: DadosDTO | undefined;
+    protected dados?: ICdDTO | IDvdDTO | IPublicacaoDTO;
 
     protected constructor(midia: IMidiaDTO) {
         this.id = midia.id ?? "";

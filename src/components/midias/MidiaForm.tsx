@@ -3,10 +3,11 @@
 import {useState, useEffect} from "react";
 import {Midia} from "@prisma/client";
 import {TipoDeMidia} from "@prisma/client";
-import {Input} from "@/components/ui/Input.tsx";
-import {Button} from "@/components/ui/Button.tsx";
 import Link from "next/link";
-import {CardFooter} from "@/components/ui/Card.tsx";
+import {Input} from "@/src/components/ui/Input.tsx";
+import {Button} from "@/src/components/ui/Button.tsx";
+import {CardFooter} from "@/src/components/ui/Card.tsx";
+
 
 interface MidiaFormProps {
     initialData?: Midia;
@@ -82,7 +83,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
             const duracao = Number(duracaoRaw);
             if (isNaN(duracao) || duracao <= 0) newErrors.duracao = "Duração deve ser um número maior que 0";
 
-            const faixas = faixasRaw.split(",").map((s:any) => s.trim()).filter(Boolean);
+            const faixas = faixasRaw.split(",").map((s: any) => s.trim()).filter(Boolean);
             if (faixas.length === 0) newErrors.faixas = "Informe ao menos uma faixa";
 
             payloadDados = {artista, faixas, duracao};
@@ -102,7 +103,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
             const duracao = Number(duracaoRaw);
             if (isNaN(duracao) || duracao <= 0) newErrors.duracao = "Duração deve ser um número maior que 0";
 
-            const legendas = legendasRaw.split(",").map((s:any) => s.trim()).filter(Boolean);
+            const legendas = legendasRaw.split(",").map((s: any) => s.trim()).filter(Boolean);
             if (legendas.length === 0) newErrors.legendas = "Informe ao menos uma legenda";
 
             payloadDados = {diretor, codigoDeRegiao, legendas, duracao};
@@ -133,14 +134,14 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                         <div>
                             <label htmlFor="autor" className="block text-sm font-medium text-gray-700">Autor *</label>
                             <Input id="autor" type="text" value={dados.autor || ""}
-                                   onChange={(e:any) => setDados({...dados, autor: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, autor: e.target.value})}/>
                             {errors.autor && <p className="text-red-500 text-sm mt-1">{errors.autor}</p>}
                         </div>
 
                         <div>
                             <label htmlFor="isbn" className="block text-sm font-medium text-gray-700">ISBN *</label>
                             <Input id="isbn" type="text" value={dados.isbn || ""}
-                                   onChange={(e:any) => setDados({...dados, isbn: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, isbn: e.target.value})}/>
                             {errors.isbn && <p className="text-red-500 text-sm mt-1">{errors.isbn}</p>}
                         </div>
 
@@ -148,7 +149,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="paginas" className="block text-sm font-medium text-gray-700">Páginas
                                 *</label>
                             <Input id="paginas" type="number" value={dados.paginas || ""}
-                                   onChange={(e:any) => setDados({...dados, paginas: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, paginas: e.target.value})}/>
                             {errors.paginas && <p className="text-red-500 text-sm mt-1">{errors.paginas}</p>}
                         </div>
                     </div>
@@ -161,7 +162,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="artista" className="block text-sm font-medium text-gray-700">Artista
                                 *</label>
                             <Input id="artista" type="text" value={dados.artista || ""}
-                                   onChange={(e:any) => setDados({...dados, artista: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, artista: e.target.value})}/>
                             {errors.artista && <p className="text-red-500 text-sm mt-1">{errors.artista}</p>}
                         </div>
 
@@ -169,15 +170,15 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="faixas" className="block text-sm font-medium text-gray-700">Faixas * <span
                                 className="text-xs text-gray-500">(separe por vírgula)</span></label>
                             <Input id="faixas" type="text" value={dados.faixas || ""}
-                                   onChange={(e:any) => setDados({...dados, faixas: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, faixas: e.target.value})}/>
                             {errors.faixas && <p className="text-red-500 text-sm mt-1">{errors.faixas}</p>}
                         </div>
 
                         <div>
                             <label htmlFor="duracao" className="block text-sm font-medium text-gray-700">Duração
-                                (segundos) *</label>
+                                (minutos) *</label>
                             <Input id="duracao" type="number" value={dados.duracao || ""}
-                                   onChange={(e:any) => setDados({...dados, duracao: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}/>
                             {errors.duracao && <p className="text-red-500 text-sm mt-1">{errors.duracao}</p>}
                         </div>
                     </div>
@@ -190,7 +191,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="diretor" className="block text-sm font-medium text-gray-700">Diretor
                                 *</label>
                             <Input id="diretor" type="text" value={dados.diretor || ""}
-                                   onChange={(e:any) => setDados({...dados, diretor: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, diretor: e.target.value})}/>
                             {errors.diretor && <p className="text-red-500 text-sm mt-1">{errors.diretor}</p>}
                         </div>
 
@@ -198,7 +199,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="codigoDeRegiao" className="block text-sm font-medium text-gray-700">Código
                                 de Região *</label>
                             <Input id="codigoDeRegiao" type="text" value={dados.codigoDeRegiao || ""}
-                                   onChange={(e:any) => setDados({...dados, codigoDeRegiao: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, codigoDeRegiao: e.target.value})}/>
                             {errors.codigoDeRegiao &&
                                 <p className="text-red-500 text-sm mt-1">{errors.codigoDeRegiao}</p>}
                         </div>
@@ -207,15 +208,15 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                             <label htmlFor="legendas" className="block text-sm font-medium text-gray-700">Legendas
                                 * <span className="text-xs text-gray-500">(separe por vírgula)</span></label>
                             <Input id="legendas" type="text" value={dados.legendas || ""}
-                                   onChange={(e:any) => setDados({...dados, legendas: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, legendas: e.target.value})}/>
                             {errors.legendas && <p className="text-red-500 text-sm mt-1">{errors.legendas}</p>}
                         </div>
 
                         <div>
                             <label htmlFor="duracao" className="block text-sm font-medium text-gray-700">Duração
-                                (segundos) *</label>
+                                (minutos) *</label>
                             <Input id="duracao" type="number" value={dados.duracao || ""}
-                                   onChange={(e:any) => setDados({...dados, duracao: e.target.value})}/>
+                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}/>
                             {errors.duracao && <p className="text-red-500 text-sm mt-1">{errors.duracao}</p>}
                         </div>
                     </div>
@@ -234,7 +235,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                 {errors.titulo && <p className="text-red-500 text-sm mt-1">{errors.titulo}</p>}
             </div>
 
-            {formMode === "create" && (
+            {formMode === "create" ? (
                 <div>
                     <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">Tipo</label>
                     <select id="tipo" value={tipo} onChange={(e: any) => setTipo(e.target.value as TipoDeMidia)}
@@ -243,6 +244,11 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                         <option value="CD">CD</option>
                         <option value="DVD">DVD</option>
                     </select>
+                </div>
+            ) : (
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Tipo</label>
+                    <input type="text" readOnly value={tipo} className="mt-1 block w-full rounded-md border-gray-200 bg-gray-100 text-gray-700" />
                 </div>
             )}
 
