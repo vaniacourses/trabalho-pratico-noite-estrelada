@@ -2,26 +2,27 @@ import {Exemplar, Reserva} from "@prisma/client";
 
 export interface IMidiaDTO {
     id?: string;
-    tipo: "LIVRO" | "DVD" | "CD";
+    tipo: "PUBLICACAO" | "DVD" | "CD";
     titulo: string;
     dataCriacao: Date
+    dados: IPublicacaoDTO | ICdDTO | IDvdDTO
     exemplares?: Exemplar[]
     reservas?: Reserva[]
 }
 
-export interface ILivroDTO extends IMidiaDTO {
+export interface IPublicacaoDTO{
     autor: string;
     isbn?: string;
     paginas: number;
 }
 
-export interface ICdDTO extends IMidiaDTO {
+export interface ICdDTO{
     artista: string;
     faixas: string[];
     duracao: number;
 }
 
-export interface IDvdDTO extends IMidiaDTO {
+export interface IDvdDTO {
     diretor: string
     codigoDeRegiao: string
     legendas: string[]
@@ -32,6 +33,7 @@ export interface IMidiaResponse {
     id: string;
     tipo: string;
     titulo: string;
+    dados: IPublicacaoDTO | ICdDTO | IDvdDTO;
 }
 
 export interface IRealizarEmprestimoDTO {

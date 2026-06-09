@@ -1,47 +1,29 @@
-import {ICdDTO} from "@/src/types";
+import {ICdDTO, IMidiaDTO} from "@/src/types";
 import {MidiaProduct} from "@/src/domain/Midia/MidiaProduct.ts";
 import {TipoDeMidia} from "@prisma/client";
 
 export class CdProduct extends MidiaProduct {
-    private artista: string;
-    private faixas: string[];
-    private duracao: number;
 
-    constructor(dados: ICdDTO) {
-        super(dados);
-        this.artista = dados.artista;
-        this.faixas = dados.faixas;
-        this.duracao = dados.duracao
+    constructor(midia: IMidiaDTO, cd: ICdDTO) {
+        super(midia);
+        midia.tipo = TipoDeMidia.CD
+        midia.dados = cd
     }
 
     public gravar(): any {
         return {
-            tipo: "CD" as TipoDeMidia,
+            tipo: this.tipo,
             titulo: this.titulo,
-
-            cd: {
-                create: {
-                    artista: this.artista,
-                    faixas: this.faixas,
-                    duracao: this.duracao,
-                }
-            }
+            dados: this.dados
 
         }
     }
 
-    public atualizar(): any{
+    public atualizar(): any {
         return {
             tipo: this.tipo,
             titulo: this.titulo,
-
-            cd: {
-                update: {
-                    artista: this.artista,
-                    faixas: this.faixas,
-                    duracao: this.duracao,
-                }
-            }
+            dados: this.dados,
 
         }
     }

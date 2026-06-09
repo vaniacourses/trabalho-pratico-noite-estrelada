@@ -3,19 +3,19 @@
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 import {Card, CardContent} from "@/components/ui/Card.tsx";
-import {LeitorForm} from "@/components/leitores/LeitorForm";
-import {Leitor} from "@prisma/client";
+import {Midia} from "@prisma/client";
+import {MidiaForm} from "@/src/components/midias/MidiaForm.tsx";
 
-export default function CreateLeitorPage() {
+export default function CreateMidiaPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleCreateLeitor = async (
-        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
+    const handleCreateMidia = async (
+        data: Omit<Midia, "id" | "dataCriacao" | "emprestimos" | "reservas">
     ) => {
         setIsSubmitting(true);
         try {
-            const response = await fetch("/api/leitores", {
+            const response = await fetch("/api/midias", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -24,18 +24,18 @@ export default function CreateLeitorPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to create leitor");
+                throw new Error("Failed to create media");
             }
 
             sessionStorage.setItem(
                 'successMessage',
-                'Leitor criado com sucesso!'
+                'Mídia criado com sucesso!'
             );
 
-            router.push("/leitores"); // Redirect to leitores list after creation
+            router.push("/midias"); // Redirect to leitores list after creation
         } catch (error) {
-            console.error("Error creating leitor:", error);
-            alert("Erro ao criar leitor. Verifique o console para mais detalhes.");
+            console.error("Error creating media:", error);
+            alert("Erro ao criar mídia. Verifique o console para mais detalhes.");
         } finally {
             setIsSubmitting(false);
         }
@@ -44,13 +44,13 @@ export default function CreateLeitorPage() {
     return (
         <div className="w-1/4 mx-auto">
             <h1 className="text-3xl text-center font-bold mt-6 mb-5">
-                Criar Novo Leitor
+                Criar Nova Mídia
             </h1>
             <Card>
                 <CardContent>
-                    <LeitorForm
+                    <MidiaForm
                         formMode={"create"}
-                        onSubmit={handleCreateLeitor} isSubmitting={isSubmitting}
+                        onSubmit={handleCreateMidia} isSubmitting={isSubmitting}
                     />
                 </CardContent>
             </Card>

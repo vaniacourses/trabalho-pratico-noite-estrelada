@@ -38,7 +38,7 @@ enum EstadoReserva {
 }
 
 enum TipoDeMidia {
-  LIVRO
+  PUBLICACAO
   DVD
   CD
 }
@@ -61,48 +61,15 @@ model Leitor {
 
 model Midia {
   id          String      @id @default(cuid())
-  tipo        TipoDeMidia @default(LIVRO)
+  tipo        TipoDeMidia @default(PUBLICACAO)
   titulo      String
   dataCriacao DateTime    @default(now())
 
   exemplares Exemplar[]
   reservas   Reserva[]
-  livro      Livro?
-  cd         CD?
-  dvd        DVD?
+  dados      Json
 
   @@map("midias")
-}
-
-model Livro {
-  midiaId String @id
-  autor   String
-  isbn    String @unique
-  paginas Int
-  midia   Midia  @relation(fields: [midiaId], references: [id])
-
-  @@map("livros")
-}
-
-model CD {
-  midiaId String   @id
-  artista String
-  faixas  String[]
-  duracao Int
-  midia   Midia    @relation(fields: [midiaId], references: [id])
-
-  @@map("cds")
-}
-
-model DVD {
-  midiaId        String   @id
-  diretor        String
-  codigoDeRegiao String
-  legendas       String[]
-  duracao        Int
-  midia          Midia    @relation(fields: [midiaId], references: [id])
-
-  @@map("dvds")
 }
 
 model Exemplar {

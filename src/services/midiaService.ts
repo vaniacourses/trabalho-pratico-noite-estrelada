@@ -1,6 +1,6 @@
 import {MidiaRespository} from "@/src/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/src/types";
-import {LivroCreator} from "@/src/domain/Midia/LivroCreator.ts";
+import {PublicacaoCreator} from "@/src/domain/Midia/PublicacaoCreator.ts";
 import {CdCreator} from "@/src/domain/Midia/CdCreator.ts";
 import {DvdCreator} from "@/src/domain/Midia/DvdCreator.ts";
 import {Midia, TipoDeMidia} from "@prisma/client";
@@ -71,7 +71,7 @@ export class MidiaService {
     private detectarFactory = {
         [TipoDeMidia.CD]: new CdCreator(),
         [TipoDeMidia.DVD]: new DvdCreator(),
-        [TipoDeMidia.LIVRO]: new LivroCreator()
+        [TipoDeMidia.PUBLICACAO]: new PublicacaoCreator()
     } as const
 
     private mapearParaResponse(midia: any): IMidiaResponse {
@@ -79,6 +79,7 @@ export class MidiaService {
             id: midia.id,
             tipo: midia.tipo,
             titulo: midia.titulo,
+            dados: midia.dados
         }
     }
 
