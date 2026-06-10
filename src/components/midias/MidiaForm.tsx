@@ -7,6 +7,7 @@ import Link from "next/link";
 import {Input} from "@/src/components/ui/Input.tsx";
 import {Button} from "@/src/components/ui/Button.tsx";
 import {CardFooter} from "@/src/components/ui/Card.tsx";
+import {mediaTranslate} from "@/src/domain/translation.ts";
 
 
 interface MidiaFormProps {
@@ -239,7 +240,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                 <div>
                     <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">Tipo</label>
                     <select id="tipo" value={tipo} onChange={(e: any) => setTipo(e.target.value as TipoDeMidia)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3">
                         <option value="PUBLICACAO">Publicação</option>
                         <option value="CD">CD</option>
                         <option value="DVD">DVD</option>
@@ -248,7 +249,8 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
             ) : (
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Tipo</label>
-                    <input type="text" readOnly value={tipo} className="mt-1 block w-full rounded-md border-gray-200 bg-gray-100 text-gray-700" />
+                    <input type="text" readOnly value={mediaTranslate[tipo]}
+                           className="mt-1 block w-full rounded-md p-3 border-gray-200 bg-gray-100 text-gray-700"/>
                 </div>
             )}
 
@@ -260,7 +262,8 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
             </div>
 
             <CardFooter>
-                <Link href={"/midias"} className={"btn btn-delete ml-2"}>Voltar</Link>
+                <Link href={formMode === "create" ? "/midias" : `/midias/${initialData?.id}`}
+                      className={"btn btn-delete ml-2"}>Voltar</Link>
             </CardFooter>
         </form>
     );

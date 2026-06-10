@@ -37,10 +37,11 @@ export default function EditMidiaPage() {
 
             sessionStorage.setItem(
                 'successMessage',
-                'Mídia atualizado com sucesso!'
+                'Mídia atualizada com sucesso!'
             );
 
-            router.push("/midias");
+            // After successful update, redirect back to the view page for this media
+            router.push(`/midias/${id}`);
         } catch (error) {
             console.error("Error creating midia:", error);
             alert("Erro ao atualizar mídia. Verifique o console para mais detalhes.");

@@ -4,6 +4,7 @@ import {Midia} from "@prisma/client";
 import {formatDate} from "@/src/utils/helpers.ts";
 import Link from "next/link";
 import {useState, useEffect} from "react";
+import {mediaTranslate} from "@/src/domain/translation.ts";
 
 interface AlertState {
     show: boolean;
@@ -165,12 +166,12 @@ export default function MidiasPage() {
                                 {midias.map((midia) => (
                                     <tr key={midia.id}>
                                         <td className="p-5 text-center">{midia.titulo}</td>
-                                        <td className="p-5 text-center">{midia.tipo}</td>
+                                        <td className="p-5 text-center">{mediaTranslate[midia.tipo]}</td>
                                         <td className="p-5 text-center">{formatDate(midia.dataCriacao)}</td>
                                         <td className="p-5 text-center">
-                                            <Link href={`/midias/${midia.id}/edit`}>
+                                            <Link href={`/midias/${midia.id}`}>
                                                 <button className="btn-edit mr-6">
-                                                    Editar
+                                                    Visualizar
                                                 </button>
                                             </Link>
                                             <button
