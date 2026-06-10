@@ -1,5 +1,5 @@
-import {IMidiaDTO} from "@/src/types";
-import {MidiaProduct} from "@/src/domain/Midia/MidiaProduct.ts";
+import {IMidiaDTO} from "@/types";
+import {MidiaProduct} from "@/domain/Midia/MidiaProduct.ts";
 
 export abstract class MidiaFactory {
 

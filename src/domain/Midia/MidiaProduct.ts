@@ -1,4 +1,4 @@
-import {ICdDTO, IDvdDTO, IMidiaDTO, IPublicacaoDTO} from "@/src/types";
+import {ICdDTO, IDvdDTO, IMidiaDTO, IPublicacaoDTO} from "@/types";
 
 export abstract class MidiaProduct {
     protected id?: string;

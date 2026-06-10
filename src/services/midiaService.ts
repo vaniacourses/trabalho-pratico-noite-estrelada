@@ -1,8 +1,8 @@
-import {MidiaRespository} from "@/src/repositories/midiaRepository.ts";
-import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/src/types";
-import {PublicacaoCreator} from "@/src/domain/Midia/PublicacaoCreator.ts";
-import {CdCreator} from "@/src/domain/Midia/CdCreator.ts";
-import {DvdCreator} from "@/src/domain/Midia/DvdCreator.ts";
+import {MidiaRespository} from "@/repositories/midiaRepository.ts";
+import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/types";
+import {PublicacaoCreator} from "@/domain/Midia/PublicacaoCreator.ts";
+import {CdCreator} from "@/domain/Midia/CdCreator.ts";
+import {DvdCreator} from "@/domain/Midia/DvdCreator.ts";
 import {Midia, TipoDeMidia} from "@prisma/client";
 
 export class MidiaService {

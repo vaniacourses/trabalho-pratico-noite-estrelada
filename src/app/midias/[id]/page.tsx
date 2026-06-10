@@ -4,9 +4,8 @@ import {useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import Link from "next/link";
 import {Midia, TipoDeMidia} from "@prisma/client";
-import {formatDate} from "@/src/utils/helpers.ts";
-import {mediaTranslate} from "@/src/domain/translation.ts";
-import {Button} from "@/src/components/ui/Button.tsx";
+import {formatDate} from "@/utils/helpers.ts";
+import {mediaTranslate} from "@/domain/translation.ts";
 
 interface AlertState {
     show: boolean;
@@ -119,8 +118,10 @@ export default function ViewMidiaPage() {
     }
 
     return (
-        <main className="grid  grid-cols-6 justify-center w-full mt-5">
+
+        <main>
             {alert.show && (
+                <>
                 <div
                     className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`}`}
                     role="alert">
@@ -134,8 +135,10 @@ export default function ViewMidiaPage() {
                             onClick={() => setAlert(prev => ({...prev, show: false}))} aria-label="Close">×
                     </button>
                 </div>
+                </>
             )}
 
+            <div className="grid  grid-cols-6 justify-center w-full mt-5">
             <div className="bg-white rounded shadow mt-6 p-5 col-span-2 col-start-3">
             <h1 className="text-2xl font-bold mb-4">{midia.titulo}</h1>
 
@@ -152,16 +155,17 @@ export default function ViewMidiaPage() {
 
                 <div className="mt-6 flex justify-around">
                     <Link href="/midias" className="btn btn-delete">
-                        <Button>
+                        <button>
                             Voltar
-                        </Button>
+                        </button>
                     </Link>
                     <Link href={`/midias/${midia.id}/edit`} className="btn-edit">
-                        <Button>
+                        <button>
                             Editar
-                        </Button>
+                        </button>
                     </Link>
                 </div>
+            </div>
             </div>
         </main>
     );

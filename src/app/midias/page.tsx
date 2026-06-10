@@ -1,10 +1,10 @@
 "use client";
 
 import {Midia} from "@prisma/client";
-import {formatDate} from "@/src/utils/helpers.ts";
+import {formatDate} from "@/utils/helpers.ts";
 import Link from "next/link";
 import {useState, useEffect} from "react";
-import {mediaTranslate} from "@/src/domain/translation.ts";
+import {mediaTranslate} from "@/domain/translation.ts";
 
 interface AlertState {
     show: boolean;

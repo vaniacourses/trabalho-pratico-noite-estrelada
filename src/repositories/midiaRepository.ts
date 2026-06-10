@@ -1,6 +1,6 @@
-import {prisma} from "@/src/lib/prisma.ts";
 import {Midia, Prisma} from "@prisma/client";
-import {IMidiaDTO} from "@/src/types";
+import {prisma} from "@/lib/prisma.ts";
+import {IMidiaDTO} from "@/types";
 
 export class MidiaRespository {
 

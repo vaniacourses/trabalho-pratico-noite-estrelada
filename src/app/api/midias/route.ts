@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
-import {midiaService} from "@/src/container/midia.container.ts";
-import {IErroAplicacao} from "@/src/types";
+import {midiaService} from "@/container/midia.container.ts";
+import {IErroAplicacao} from "@/types";
 
 // GET /api/midias
 export async function GET() {

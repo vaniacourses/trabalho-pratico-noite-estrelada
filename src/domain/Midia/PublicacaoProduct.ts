@@ -1,5 +1,5 @@
-import {IMidiaDTO, IPublicacaoDTO} from "@/src/types";
-import {MidiaProduct} from "@/src/domain/Midia/MidiaProduct.ts";
+import {IMidiaDTO, IPublicacaoDTO} from "@/types";
+import {MidiaProduct} from "@/domain/Midia/MidiaProduct.ts";
 
 export class PublicacaoProduct extends MidiaProduct {
 

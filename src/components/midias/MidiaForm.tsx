@@ -4,10 +4,10 @@ import {useState, useEffect} from "react";
 import {Midia} from "@prisma/client";
 import {TipoDeMidia} from "@prisma/client";
 import Link from "next/link";
-import {Input} from "@/src/components/ui/Input.tsx";
-import {Button} from "@/src/components/ui/Button.tsx";
-import {CardFooter} from "@/src/components/ui/Card.tsx";
-import {mediaTranslate} from "@/src/domain/translation.ts";
+import {Input} from "@/components/ui/Input.tsx";
+import {mediaTranslate} from "@/domain/translation.ts";
+import {Button} from "@/components/ui/Button.tsx";
+import {CardFooter} from "@/components/ui/Card.tsx";
 
 
 interface MidiaFormProps {

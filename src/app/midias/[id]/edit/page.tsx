@@ -2,9 +2,9 @@
 
 import {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
-import {MidiaForm} from "@/src/components/midias/MidiaForm.tsx";
+import {MidiaForm} from "@/components/midias/MidiaForm.tsx";
 import {Midia} from "@prisma/client";
-import {Card, CardContent} from "@/src/components/ui/Card.tsx";
+import {Card, CardContent} from "@/components/ui/Card.tsx";
 
 export default function EditMidiaPage() {
     const {id} = useParams()
