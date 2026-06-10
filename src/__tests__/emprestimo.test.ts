@@ -1,14 +1,15 @@
 /**
  * Exemplo de teste para o endpoint de empréstimo
- * 
+ *
  * Para executar testes de verdade, instale Jest e @testing-library/react
  * npm install --save-dev jest @testing-library/react @types/jest
- * 
+ *
  * Este arquivo é apenas para referência de como estruturar testes
  */
 
 import { EmprestimoService } from "@/services/emprestimoService";
 import { EmprestimoRepository } from "@/repositories/emprestimoRepository";
+import {EstadoEmprestimo} from "@prisma/client";
 
 // Mock do repositório para testes
 class MockEmprestimoRepository extends EmprestimoRepository {
@@ -17,9 +18,9 @@ class MockEmprestimoRepository extends EmprestimoRepository {
     return idExemplar === "exemplar-disponivel";
   }
 
-  async verificarLeitorVálido(idLeitor: string): Promise<boolean> {
-    // Simular que leitor com ID "valido" é válido
-    return idLeitor === "leitor-valido";
+  async verificarLeitorValido(idLeitor: string): Promise<boolean> {
+    // Simular que alguns leitores são válidos (incluindo cenário de muitos empréstimos)
+    return idLeitor === "leitor-valido" || idLeitor === "leitor-muitos-emprestimos";
   }
 
   async contarEmprestimosAtivos(idLeitor: string): Promise<number> {
@@ -40,7 +41,7 @@ class MockEmprestimoRepository extends EmprestimoRepository {
       dataInicio: new Date(),
       dataExpiracao,
       dataFinalizacao: null,
-      estado: "CORRENTE",
+      estado: "CORRENTE" as EstadoEmprestimo,
       dataCriacao: new Date(),
       dataAtualizacao: new Date(),
     };
@@ -131,10 +132,10 @@ describe("EmprestimoRepository", () => {
 /**
  * Executar testes:
  * npx jest
- * 
+ *
  * Executar testes com coverage:
  * npx jest --coverage
- * 
+ *
  * Modo watch (re-executar ao salvar):
  * npx jest --watch
  */
