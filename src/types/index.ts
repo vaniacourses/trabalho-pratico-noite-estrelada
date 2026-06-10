@@ -1,41 +1,58 @@
-import {EstadoLeitor} from "@prisma/client";
+import {Exemplar, Reserva} from "@prisma/client";
 
-export interface ILeitorDTO {
-    nome?: string;
-    senha?: string;
-    email?: string;
-    cpf?: string;
-    estado?: EstadoLeitor;
-    dataDeNascimento?: Date;
+export interface IMidiaDTO {
+    id?: string;
+    tipo: "PUBLICACAO" | "DVD" | "CD";
+    titulo: string;
+    dataCriacao: Date
+    dados: IPublicacaoDTO | ICdDTO | IDvdDTO
+    exemplares?: Exemplar[]
+    reservas?: Reserva[]
 }
 
-export interface ILeitorResponse {
+export interface IPublicacaoDTO{
+    autor: string;
+    isbn?: string;
+    paginas: number;
+}
+
+export interface ICdDTO{
+    artista: string;
+    faixas: string[];
+    duracao: number;
+}
+
+export interface IDvdDTO {
+    diretor: string
+    codigoDeRegiao: string
+    legendas: string[]
+    duracao: number
+}
+
+export interface IMidiaResponse {
     id: string;
-    nome: string;
-    email: string;
-    estado: EstadoLeitor
-    cpf: string;
-    dataDeNascimento: Date;
+    tipo: string;
+    titulo: string;
+    dados: IPublicacaoDTO | ICdDTO | IDvdDTO;
 }
-
 
 export interface IRealizarEmprestimoDTO {
-    idLeitor: string;
-    idExemplar: string;
-    diasEmprestimo?: number;
+  idLeitor: string;
+  idExemplar: string;
+  diasEmprestimo?: number;
 }
 
 export interface IEmprestimoResponse {
-    id: string;
-    idLeitor: string;
-    idExemplar: string;
-    dataInicio: Date;
-    dataExpiracao: Date;
-    estado: string;
+  id: string;
+  idLeitor: string;
+  idExemplar: string;
+  dataInicio: Date;
+  dataExpiracao: Date;
+  estado: string;
 }
 
 export interface IErroAplicacao {
-    codigo: string;
-    mensagem: string;
-    statusHttp: number;
+  codigo: string;
+  mensagem: string;
+  statusHttp: number;
 }
