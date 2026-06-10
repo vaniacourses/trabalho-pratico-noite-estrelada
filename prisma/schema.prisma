@@ -45,16 +45,18 @@ enum TipoDeMidia {
 
 // Models
 model Leitor {
-  id              String       @id @default(cuid())
-  nome            String
-  email           String       @unique
-  senha           String
-  estado          EstadoLeitor @default(INCOMPLETO)
-  dataCriacao     DateTime     @default(now())
-  dataAtualizacao DateTime     @updatedAt
+  id               String       @id @default(cuid())
+  nome             String
+  cpf              String?      @unique
+  dataDeNascimento DateTime?
+  email            String?
+  senha            String
+  estado           EstadoLeitor @default(INCOMPLETO)
+  dataCriacao      DateTime     @default(now())
+  dataAtualizacao  DateTime     @updatedAt
 
-  emprestimos Emprestimo[]
-  reservas    Reserva[]
+  emprestimos       Emprestimo[]
+  reservas          Reserva[]
 
   @@map("leitores")
 }
@@ -100,9 +102,10 @@ model Emprestimo {
   leitor   Leitor   @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
   exemplar Exemplar @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
 
+  @@map("emprestimos")
   @@index([idLeitor])
   @@index([idExemplar])
-  @@map("emprestimos")
+
 }
 
 model Reserva {
