@@ -102,6 +102,7 @@ export async function PUT(
                     erro: {
                         codigo: erroAplicacao.codigo,
                         mensagem: erroAplicacao.mensagem,
+                        erros: erroAplicacao.erros,
                     },
                 },
                 {status: erroAplicacao.statusHttp}

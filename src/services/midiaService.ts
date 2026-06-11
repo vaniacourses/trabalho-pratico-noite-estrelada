@@ -1,9 +1,11 @@
 import {MidiaRespository} from "@/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/types";
-import {PublicacaoCreator} from "@/domain/Midia/PublicacaoCreator.ts";
-import {CdCreator} from "@/domain/Midia/CdCreator.ts";
-import {DvdCreator} from "@/domain/Midia/DvdCreator.ts";
 import {Midia, TipoDeMidia} from "@prisma/client";
+import {
+    CdValidationStrategy,
+    DvdValidationStrategy,
+    PublicacaoValidationStrategy
+} from "@/domain/Midia/MidiaValidationStrategy.ts";
 
 export class MidiaService {
     private repository: MidiaRespository;
@@ -17,20 +19,42 @@ export class MidiaService {
     }
 
     async criarMidia(dto: IMidiaDTO): Promise<IMidiaResponse> {
-        const {tipo} = dto;
-        const factory = this.detectarFactory[tipo as TipoDeMidia];
-        const product = factory.gravar(dto);
-        const midia = await this.repository.criarMidia(product);
+
+        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+
+        const { erros } = strategy.validar(dto);
+
+        if (Object.keys(erros).length > 0) {
+            throw this.criarErro(
+                "VALIDACAO_ERRO",
+                "Houve erros de validação na criação da mídia",
+                400,
+                erros
+            );
+        }
+
+        const midia = await this.repository.criarMidia(dto);
         return this.mapearParaResponse(midia);
     }
 
     async atualizarMidia(id: string, dto: IMidiaDTO): Promise<Midia> {
 
+        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+
+        const { erros } = strategy.validar(dto);
+
+        if (Object.keys(erros).length > 0) {
+            throw this.criarErro(
+                "VALIDACAO_ERRO",
+                "Houve erros de validação na atualização da mídia",
+                400,
+                erros
+            );
+        }
+
+
         try {
-            const {tipo} = dto;
-            const factory = this.detectarFactory[tipo as TipoDeMidia];
-            const registro = factory.atualizar(dto);
-            return await this.repository.atualizarMidia(id, registro);
+            return await this.repository.atualizarMidia(id, dto);
         } catch (error: any) {
             throw this.criarErro(
                 "ERRO_ATUALIZAR_MIDIA",
@@ -67,10 +91,10 @@ export class MidiaService {
         return midia;
     }
 
-    private detectarFactory = {
-        [TipoDeMidia.CD]: new CdCreator(),
-        [TipoDeMidia.DVD]: new DvdCreator(),
-        [TipoDeMidia.PUBLICACAO]: new PublicacaoCreator()
+    private detectarStrategy = {
+        [TipoDeMidia.CD]: new CdValidationStrategy(),
+        [TipoDeMidia.DVD]: new DvdValidationStrategy(),
+        [TipoDeMidia.PUBLICACAO]: new PublicacaoValidationStrategy()
     } as const
 
     private mapearParaResponse(midia: any): IMidiaResponse {
@@ -82,11 +106,12 @@ export class MidiaService {
         }
     }
 
-    private criarErro(codigo: string, mensagem: string, statusHttp: number): IErroAplicacao {
+    private criarErro(codigo: string, mensagem: string, statusHttp: number, erros?: Record<string, string>): IErroAplicacao {
         return {
             codigo,
             mensagem,
             statusHttp,
+            erros
         };
     }
 
