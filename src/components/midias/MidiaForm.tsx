@@ -169,7 +169,7 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
 
                         <div>
                             <label htmlFor="faixas" className="block text-sm font-medium text-gray-700">Faixas * <span
-                                className="text-xs text-gray-500">(separe por vírgula)</span></label>
+                                className="text-xs text-gray-500">(coloque no formato faixa:duracao,...)</span></label>
                             <Input id="faixas" type="text" value={dados.faixas || ""}
                                    onChange={(e: any) => setDados({...dados, faixas: e.target.value})}/>
                             {errors.faixas && <p className="text-red-500 text-sm mt-1">{errors.faixas}</p>}

@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
                     erro: {
                         codigo: erroAplicacao.codigo,
                         mensagem: erroAplicacao.mensagem,
+                        erros: erroAplicacao.erros,
                     },
                 },
                 {status: erroAplicacao.statusHttp}

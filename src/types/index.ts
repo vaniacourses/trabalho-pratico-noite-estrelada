@@ -12,7 +12,7 @@ export interface IMidiaDTO {
 
 export interface IPublicacaoDTO{
     autor: string;
-    isbn?: string;
+    isbn: string;
     paginas: number;
 }
 
@@ -55,4 +55,5 @@ export interface IErroAplicacao {
   codigo: string;
   mensagem: string;
   statusHttp: number;
+  erros?: Record<string, string>;
 }
