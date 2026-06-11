@@ -33,10 +33,10 @@ export class CdValidationStrategy implements MidiaValidationStrategy {
             erros.duracao = "Duração do CD deve ser menor ou igual a 80 minutos"
         }
 
-        const faixasDuracao: number = cd.faixas.reduce((acc: number, faixa: string)
-            => acc + Number(faixa.split(":")[1]), 0);
+        const faixasDuracao: number = cd.faixas
+            .reduce((acc: number, faixa: string) => acc + Number(faixa.split(":")[1]), 0);
 
-        if(cd.duracao !== faixasDuracao){
+        if (cd.duracao !== faixasDuracao) {
             erros.faixas = "A soma da duração das faixas deve ser igual à duração total do CD";
         }
 
