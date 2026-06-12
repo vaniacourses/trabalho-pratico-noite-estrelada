@@ -10,7 +10,7 @@ import {CardFooter} from "@/components/ui/Card.tsx";
 interface LeitorFormProps {
     initialData?: Leitor;
     formMode: "create" | "edit";
-    onSubmit: (data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">) => void;
+    onSubmit: (data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao">) => void;
     isSubmitting: boolean;
 }
 
@@ -60,10 +60,11 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
             } else if (senha !== senhaConfirm) {
                 newErrors.senhaConfirm = "As senhas não coincidem";
             }
+        }
 
-            if (cpf.length !== 0 && cpf.length < 11) {
-                newErrors.cpf = "O cpf precisa estar no formato xxx.xxx.xxx-xx";
-            }
+        // CPF formatado tem 14 chars (xxx.xxx.xxx-xx); validação em ambos os modos (create e edit)
+        if (cpf.length !== 0 && cpf.length < 14) {
+            newErrors.cpf = "O cpf precisa estar no formato xxx.xxx.xxx-xx";
         }
 
         setErrors(newErrors);

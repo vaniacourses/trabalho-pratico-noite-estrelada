@@ -74,7 +74,8 @@ export default function MidiasPage() {
             const data = await response.json();
 
             if (response.ok) {
-                setMidias(midias.filter(m => m.id !== midiaId));
+                // updater funcional evita closure stale em deletes concorrentes
+                setMidias(prev => prev.filter(m => m.id !== midiaId));
                 setAlert({
                     show: true,
                     message: data.mensagem || 'Mídia deletada com sucesso',
@@ -93,6 +94,9 @@ export default function MidiasPage() {
                 message: erro.message || 'Erro ao deletar mídia',
                 tipo: 'erro'
             });
+        } finally {
+            // sem o reset o botão ficaria preso em "Deletando..." se o DELETE falhar
+            setLoadingId(null);
         }
     };
 

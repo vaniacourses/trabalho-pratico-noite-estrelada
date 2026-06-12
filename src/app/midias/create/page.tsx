@@ -18,8 +18,9 @@ export default function CreateMidiaPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
 
+    // relações (emprestimos, reservas) e 'estado' (inexistente em Midia) removidos do Omit
     const handleCreateMidia = async (
-        data: Omit<Midia, "id" | "dataCriacao" | "emprestimos" | "reservas">
+        data: Omit<Midia, "id" | "dataCriacao">
     ) => {
         setIsSubmitting(true);
         setAlert({show: false, message: '', tipo: 'sucesso'});

@@ -33,11 +33,11 @@ export class CdValidationStrategy implements MidiaValidationStrategy {
             erros.duracao = "Duração do CD deve ser menor ou igual a 80 minutos"
         }
 
-        const faixasDuracao: number = cd.faixas
-            .reduce((acc: number, faixa: string) => acc + Number(faixa.split(":")[1]), 0);
-
-        if (cd.duracao !== faixasDuracao) {
-            erros.faixas = "A soma da duração das faixas deve ser igual à duração total do CD";
+        // A soma de duração por faixa foi removida: o formulário coleta apenas nomes
+        // (ex: "Time, Money"), sem duração individual, tornando essa validação impossível de satisfazer.
+        // Guard de null/undefined: body direto à API pode omitir 'faixas'
+        if (!cd.faixas || cd.faixas.length === 0) {
+            erros.faixas = "O CD deve ter ao menos uma faixa";
         }
 
         return {erros};
@@ -51,16 +51,18 @@ export class PublicacaoValidationStrategy implements MidiaValidationStrategy {
         const erros: Record<string, string> = {};
         const publicacao = midia.dados as IPublicacaoDTO;
 
-        const isbn = publicacao.isbn.replace(/[-\s]/g, '');
-
-        // numero de paginas
-        if (publicacao.paginas < 4 || publicacao.paginas > 10000) {
-            erros.paginas = "Número de páginas inválido";
+        // guard: body direto à API pode omitir isbn ou paginas
+        if (!publicacao.isbn) {
+            erros.isbn = "ISBN é obrigatório";
+        } else {
+            const isbn = publicacao.isbn.replace(/[-\s]/g, '');
+            if (!/^\d{9}[\dX]$/.test(isbn)) {
+                erros.isbn = "ISBN deve conter 10 dígitos ou 9 dígitos seguidos de 'X'";
+            }
         }
 
-        // codigo isbn valido
-        if (!/^\d{9}[\dX]$/.test(isbn)) {
-            erros.isbn = "ISBN deve conter 10 dígitos ou 9 dígitos seguidos de 'X'";
+        if (publicacao.paginas == null || publicacao.paginas < 4 || publicacao.paginas > 10000) {
+            erros.paginas = "Número de páginas inválido";
         }
 
         return {erros};

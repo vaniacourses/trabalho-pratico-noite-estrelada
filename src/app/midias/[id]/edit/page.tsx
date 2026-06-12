@@ -26,8 +26,9 @@ export default function EditMidiaPage() {
             .then(setLeitor);
     }, [id]);
 
+    // relações (emprestimos, reservas) e 'estado' (inexistente em Midia) removidos do Omit
     const handleUpdateMidia = async (
-        data: Omit<Midia, "id" | "estado" | "dataCriacao" | "emprestimos" | "reservas">
+        data: Omit<Midia, "id" | "dataCriacao">
     ) => {
         setIsSubmitting(true);
         setAlert({show: false, message: '', tipo: 'sucesso'});

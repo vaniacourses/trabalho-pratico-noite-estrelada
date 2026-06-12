@@ -18,8 +18,9 @@ export default function EditLeitorPage() {
             .then(setLeitor);
     }, [id]);
 
+    // relações (emprestimos, reservas) removidas do Omit — não existem no tipo base Prisma
     const handleUpdateLeitor = async (
-        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
+        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao">
     ) => {
         setIsSubmitting(true);
         try {

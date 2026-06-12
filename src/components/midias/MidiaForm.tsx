@@ -13,7 +13,8 @@ import {CardFooter} from "@/components/ui/Card.tsx";
 interface MidiaFormProps {
     initialData?: Midia;
     formMode: "create" | "edit";
-    onSubmit: (data: Omit<Midia, "id" | "dataCriacao" | "exemplares" | "reservas">) => void;
+    // relações (exemplares, reservas) removidas do Omit — não existem no tipo base Prisma
+    onSubmit: (data: Omit<Midia, "id" | "dataCriacao">) => void;
     isSubmitting: boolean;
 }
 

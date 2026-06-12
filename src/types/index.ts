@@ -36,6 +36,30 @@ export interface IMidiaResponse {
     dados: IPublicacaoDTO | ICdDTO | IDvdDTO;
 }
 
+export interface ILeitorCreateDTO {
+  nome: string;
+  senha: string;
+  email?: string;
+  cpf?: string;
+  dataDeNascimento?: Date | null;
+}
+
+export interface ILeitorUpdateDTO {
+  nome: string;
+  email: string;
+  cpf: string;
+  dataDeNascimento: Date | null;
+}
+
+export interface ILeitorResponse {
+  id: string;
+  nome: string;
+  email: string | null;
+  cpf: string | null;
+  dataDeNascimento: Date | null;
+  estado: string;
+}
+
 export interface IRealizarEmprestimoDTO {
   idLeitor: string;
   idExemplar: string;

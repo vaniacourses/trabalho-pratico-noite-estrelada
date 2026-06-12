@@ -1,6 +1,6 @@
 import {LeitorRepository} from "@/repositories/leitorRepository";
 import {EstadoLeitor, Leitor} from "@prisma/client";
-import type {IErroAplicacao, ILeitorDTO, ILeitorResponse} from "@/types";
+import type {IErroAplicacao, ILeitorCreateDTO, ILeitorUpdateDTO, ILeitorResponse} from "@/types";
 
 export class LeitorService {
     private repository: LeitorRepository;
@@ -27,46 +27,18 @@ export class LeitorService {
         return this.repository.obterLeitores()
     }
 
-    async criarLeitor(dto: ILeitorDTO): Promise<ILeitorResponse> {
-
-        const {
-            nome,
-            senha,
-            email,
-            cpf,
-            dataDeNascimento,
-        } = dto
-
-        // respect explicit estado if provided, otherwise evaluate from provided data
-        const estado = dto.estado ?? this.avaliarEstadoDoLeitor([nome, senha, email, cpf, dataDeNascimento]);
-
-        const leitor = await this.repository.criarLeitor(
-            {
-                nome,
-                senha,
-                estado,
-                email,
-                cpf,
-                dataDeNascimento
-            }
-        );
-
+    async criarLeitor(dto: ILeitorCreateDTO): Promise<ILeitorResponse> {
+        const { nome, senha, email, cpf, dataDeNascimento } = dto;
+        const estado = this.avaliarEstadoDoLeitor([nome, senha, email, cpf, dataDeNascimento]);
+        const leitor = await this.repository.criarLeitor({ nome, senha, estado, email, cpf, dataDeNascimento });
         return this.mapearParaResponse(leitor);
     }
 
-    async atualizarLeitor(id: string, data: ILeitorDTO): Promise<Leitor> {
+    async atualizarLeitor(id: string, data: ILeitorUpdateDTO): Promise<Leitor> {
         try {
-            const {
-                nome,
-                email,
-                cpf,
-                dataDeNascimento,
-            } = data
-
-            data.estado = this.avaliarEstadoDoLeitor([nome, email, cpf, dataDeNascimento])
-
-            return await this.repository.atualizarLeitor(id, data);
-
+            const { nome, email, cpf, dataDeNascimento } = data;
+            const estado = this.avaliarEstadoDoLeitor([nome, email, cpf, dataDeNascimento]);
+            return await this.repository.atualizarLeitor(id, { nome, email, cpf, dataDeNascimento, estado } as Partial<Leitor>);
         } catch (error: any) {
             throw this.criarErro(
                 "ERRO_ATUALIZAR_LEITOR",

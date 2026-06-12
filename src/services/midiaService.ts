@@ -1,6 +1,6 @@
 import {MidiaRespository} from "@/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/types";
-import {Midia, TipoDeMidia} from "@prisma/client";
+import {Midia} from "@prisma/client";
 import {
     CdValidationStrategy,
     DvdValidationStrategy,
@@ -20,7 +20,7 @@ export class MidiaService {
 
     async criarMidia(dto: IMidiaDTO): Promise<IMidiaResponse> {
 
-        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+        const strategy = this.detectarStrategy[dto.tipo];
 
         const { erros } = strategy.validar(dto);
 
@@ -39,7 +39,7 @@ export class MidiaService {
 
     async atualizarMidia(id: string, dto: IMidiaDTO): Promise<Midia> {
 
-        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+        const strategy = this.detectarStrategy[dto.tipo];
 
         const { erros } = strategy.validar(dto);
 
@@ -81,9 +81,10 @@ export class MidiaService {
         const midia = await this.repository.obterMidiaPorId(id);
 
         if (!midia) {
+            // código e mensagem corrigidos — era cópia inadvertida do leitorService
             throw this.criarErro(
-                "LEITOR_NAO_ENCONTRADO",
-                "Leitor não encontrado",
+                "MIDIA_NAO_ENCONTRADA",
+                "Mídia não encontrada",
                 404
             );
         }
@@ -91,11 +92,13 @@ export class MidiaService {
         return midia;
     }
 
-    private detectarStrategy = {
-        [TipoDeMidia.CD]: new CdValidationStrategy(),
-        [TipoDeMidia.DVD]: new DvdValidationStrategy(),
-        [TipoDeMidia.PUBLICACAO]: new PublicacaoValidationStrategy()
-    } as const
+    // chaves como string literal: TipoDeMidia é um string enum (CD="CD" etc.),
+    // mas o enum do Prisma não inicializa no ambiente jsdom dos testes
+    private detectarStrategy: Record<string, CdValidationStrategy | DvdValidationStrategy | PublicacaoValidationStrategy> = {
+        "CD": new CdValidationStrategy(),
+        "DVD": new DvdValidationStrategy(),
+        "PUBLICACAO": new PublicacaoValidationStrategy(),
+    }
 
     private mapearParaResponse(midia: any): IMidiaResponse {
         return {

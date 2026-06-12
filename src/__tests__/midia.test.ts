@@ -12,10 +12,13 @@
  * - DELETE /api/midias/:id
  */
 
-import { MidiaService } from "@/src/services/midiaService";
-import { MidiaRespository } from "@/src/repositories/midiaRepository";
-import { IErroAplicacao, IMidiaDTO, IPublicacaoDTO, ICdDTO, IDvdDTO } from "@/src/types";
-import { TipoDeMidia } from "@prisma/client";
+// Todos os objetos de teste usam IMidiaDTO (tipo completo do DTO) em vez de IPublicacaoDTO/ICdDTO/IDvdDTO
+// que são apenas o shape de 'dados'. Valores respeitam as regras de negócio:
+// CD: duracao <= 80 min | DVD: duracao <= 120 min, codigoDeRegiao in ["0","1","4","Todas"]
+// PUBLICACAO: isbn com 10 dígitos, paginas entre 4 e 10000
+import { MidiaService } from "@/services/midiaService";
+import { MidiaRespository } from "@/repositories/midiaRepository";
+import { IMidiaDTO } from "@/types";
 
 // Mock do repositório para testes
 class MockMidiaRepository extends MidiaRespository {
@@ -94,17 +97,13 @@ describe("MidiaService", () => {
     });
 
     it("✅ deve retornar todas as mídias criadas", async () => {
-      const publicacao: IPublicacaoDTO = {
+      const publicacao: IMidiaDTO = {
         tipo: "PUBLICACAO",
         titulo: "Clean Code",
         dataCriacao: new Date(),
-        autor: "Robert Martin",
-        paginas: 464,
         dados: {
-          tipo: "PUBLICACAO",
-          titulo: "Clean Code",
-          dataCriacao: new Date(),
           autor: "Robert Martin",
+          isbn: "0123456789",
           paginas: 464,
         },
       };
@@ -119,17 +118,13 @@ describe("MidiaService", () => {
 
   describe("criarMidia", () => {
     it("✅ deve criar mídia do tipo PUBLICACAO com dados válidos", async () => {
-      const publicacao: IPublicacaoDTO = {
+      const publicacao: IMidiaDTO = {
         tipo: "PUBLICACAO",
         titulo: "The Pragmatic Programmer",
         dataCriacao: new Date(),
-        autor: "David Thomas",
-        paginas: 352,
         dados: {
-          tipo: "PUBLICACAO",
-          titulo: "The Pragmatic Programmer",
-          dataCriacao: new Date(),
           autor: "David Thomas",
+          isbn: "0123456789",
           paginas: 352,
         },
       };
@@ -138,24 +133,18 @@ describe("MidiaService", () => {
 
       expect(resultado.id).toBeDefined();
       expect(resultado.titulo).toBe("The Pragmatic Programmer");
-      expect(resultado.tipo).toBe(TipoDeMidia.PUBLICACAO);
+      expect(resultado.tipo).toBe("PUBLICACAO");
     });
 
     it("✅ deve criar mídia do tipo CD com dados válidos", async () => {
-      const cd: ICdDTO = {
+      const cd: IMidiaDTO = {
         tipo: "CD",
         titulo: "Dark Side of the Moon",
         dataCriacao: new Date(),
-        artista: "Pink Floyd",
-        faixas: ["Time", "Money", "Us and Them"],
-        duracao: 4260,
         dados: {
-          tipo: "CD",
-          titulo: "Dark Side of the Moon",
-          dataCriacao: new Date(),
           artista: "Pink Floyd",
           faixas: ["Time", "Money", "Us and Them"],
-          duracao: 4260,
+          duracao: 42,
         },
       };
 
@@ -163,26 +152,19 @@ describe("MidiaService", () => {
 
       expect(resultado.id).toBeDefined();
       expect(resultado.titulo).toBe("Dark Side of the Moon");
-      expect(resultado.tipo).toBe(TipoDeMidia.CD);
+      expect(resultado.tipo).toBe("CD");
     });
 
     it("✅ deve criar mídia do tipo DVD com dados válidos", async () => {
-      const dvd: IDvdDTO = {
+      const dvd: IMidiaDTO = {
         tipo: "DVD",
         titulo: "Inception",
         dataCriacao: new Date(),
-        diretor: "Christopher Nolan",
-        codigoDeRegiao: "2",
-        legendas: ["Português", "Inglês"],
-        duracao: 8880,
         dados: {
-          tipo: "DVD",
-          titulo: "Inception",
-          dataCriacao: new Date(),
           diretor: "Christopher Nolan",
-          codigoDeRegiao: "2",
+          codigoDeRegiao: "1",
           legendas: ["Português", "Inglês"],
-          duracao: 8880,
+          duracao: 108,
         },
       };
 
@@ -190,23 +172,19 @@ describe("MidiaService", () => {
 
       expect(resultado.id).toBeDefined();
       expect(resultado.titulo).toBe("Inception");
-      expect(resultado.tipo).toBe(TipoDeMidia.DVD);
+      expect(resultado.tipo).toBe("DVD");
     });
   });
 
   describe("obterMidiaPorId", () => {
     it("✅ deve retornar mídia existente por ID", async () => {
-      const publicacao: IPublicacaoDTO = {
+      const publicacao: IMidiaDTO = {
         tipo: "PUBLICACAO",
         titulo: "Design Patterns",
         dataCriacao: new Date(),
-        autor: "Gang of Four",
-        paginas: 416,
         dados: {
-          tipo: "PUBLICACAO",
-          titulo: "Design Patterns",
-          dataCriacao: new Date(),
           autor: "Gang of Four",
+          isbn: "0123456789",
           paginas: 416,
         },
       };
@@ -220,9 +198,10 @@ describe("MidiaService", () => {
     });
 
     it("❌ deve lançar erro se mídia não encontrada", async () => {
-      await expect(service.obterMidiaPorId("id-inexistente")).rejects.toThrow(
-        "não encontrada"
-      );
+      // criarErro retorna objeto puro (não Error), então usamos toMatchObject em vez de toThrow
+      await expect(service.obterMidiaPorId("id-inexistente")).rejects.toMatchObject({
+        mensagem: "Mídia não encontrada",
+      });
     });
   });
 
@@ -232,12 +211,9 @@ describe("MidiaService", () => {
         tipo: "PUBLICACAO",
         titulo: "Code Complete",
         dataCriacao: new Date(),
-        autor: "Steve McConnell",
-        paginas: 960,
         dados: {
-          titulo: "Code Complete",
-          dataCriacao: new Date(),
           autor: "Steve McConnell",
+          isbn: "0123456789",
           paginas: 960,
         },
       };
@@ -245,15 +221,12 @@ describe("MidiaService", () => {
       const criada = await service.criarMidia(publicacao);
 
       const atualizacao: IMidiaDTO = {
-        tipo: "PUBLICACAO" as TipoDeMidia,
+        tipo: "PUBLICACAO",
         titulo: "Code Complete (2nd Edition)",
-        dataCriacao: criada.dataCriacao,
-        autor: "Steve McConnell",
-        paginas: 960,
+        dataCriacao: new Date(),
         dados: {
-          titulo: "Code Complete (2nd Edition)",
-          dataCriacao: criada.dataCriacao,
           autor: "Steve McConnell",
+          isbn: "0123456789",
           paginas: 960,
         },
       };
@@ -264,40 +237,33 @@ describe("MidiaService", () => {
     });
 
     it("❌ deve lançar erro ao atualizar mídia inexistente", async () => {
-      const atualizacao: IPublicacaoDTO = {
+      const atualizacao: IMidiaDTO = {
         tipo: "PUBLICACAO",
         titulo: "Título novo",
         dataCriacao: new Date(),
-        autor: "Autor",
-        paginas: 100,
         dados: {
-          tipo: "PUBLICACAO",
-          titulo: "Título novo",
-          dataCriacao: new Date(),
           autor: "Autor",
+          isbn: "0123456789",
           paginas: 100,
         },
       };
 
+      // criarErro retorna objeto puro; toMatchObject verifica sem exigir instanceof Error
       await expect(
         service.atualizarMidia("id-inexistente", atualizacao)
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({ codigo: "ERRO_ATUALIZAR_MIDIA" });
     });
   });
 
   describe("deletarMidia", () => {
     it("✅ deve deletar mídia existente", async () => {
-      const publicacao: IPublicacaoDTO = {
+      const publicacao: IMidiaDTO = {
         tipo: "PUBLICACAO",
         titulo: "A ser deletado",
         dataCriacao: new Date(),
-        autor: "Autor",
-        paginas: 100,
         dados: {
-          tipo: "PUBLICACAO",
-          titulo: "A ser deletado",
-          dataCriacao: new Date(),
           autor: "Autor",
+          isbn: "0123456789",
           paginas: 100,
         },
       };
@@ -310,7 +276,8 @@ describe("MidiaService", () => {
     });
 
     it("❌ deve lançar erro ao deletar mídia inexistente", async () => {
-      await expect(service.deletarMidia("id-inexistente")).rejects.toThrow();
+      // criarErro retorna objeto puro; toMatchObject verifica sem exigir instanceof Error
+      await expect(service.deletarMidia("id-inexistente")).rejects.toMatchObject({ codigo: "ERRO_DELETAR_MIDIA" });
     });
   });
 });
