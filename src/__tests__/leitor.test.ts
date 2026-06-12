@@ -168,12 +168,12 @@ describe("LeitorService", () => {
             expect(resultado.estado).toBe("INCOMPLETO");
         });
 
-        it("✅ deve criar leitor com estado explícito", async () => {
+        it("✅ deve criar leitor em estado INCOMPLETO quando cpf e data faltam", async () => {
             const resultado = await service.criarLeitor({
                 nome: "Carlos",
                 senha: "password789",
                 email: "carlos@example.com",
-                estado: "INCOMPLETO",
+                // cpf e dataDeNascimento ausentes → estado computado como INCOMPLETO
             });
 
             expect(resultado.estado).toBe("INCOMPLETO");
@@ -196,6 +196,9 @@ describe("LeitorService", () => {
         it("✅ deve atualizar nome do leitor", async () => {
             const resultado = await service.atualizarLeitor("leitor-123", {
                 nome: "João Silva Atualizado",
+                email: "joao@example.com",
+                cpf: "123.456.789-00",
+                dataDeNascimento: new Date("1990-01-15"),
             });
 
             expect(resultado).toBeDefined();
@@ -208,6 +211,7 @@ describe("LeitorService", () => {
                 nome: "João",
                 email: "novo-email@example.com",
                 cpf: "111.222.333-44",
+                dataDeNascimento: new Date("1990-01-15"),
             });
 
             expect(resultado.nome).toBe("João");
@@ -215,9 +219,12 @@ describe("LeitorService", () => {
             expect(resultado.cpf).toBe("111.222.333-44");
         });
 
-        it("✅ deve atualizar usando camelCase dataDeNascimento", async () => {
+        it("✅ deve atualizar dataDeNascimento", async () => {
             const novaData = new Date("2000-01-01");
             const resultado = await service.atualizarLeitor("leitor-123", {
+                nome: "João Silva",
+                email: "joao@example.com",
+                cpf: "123.456.789-00",
                 dataDeNascimento: novaData,
             });
 
@@ -226,7 +233,12 @@ describe("LeitorService", () => {
 
         it("❌ deve lançar erro ao atualizar leitor inexistente", async () => {
             const erroEsperado = await service
-                .atualizarLeitor("leitor-inexistente", {nome: "Novo Nome"})
+                .atualizarLeitor("leitor-inexistente", {
+                    nome: "Novo Nome",
+                    email: "email@example.com",
+                    cpf: "000.000.000-00",
+                    dataDeNascimento: null,
+                })
                 .catch((erro: any) => erro);
 
             expect(erroEsperado).toBeDefined();

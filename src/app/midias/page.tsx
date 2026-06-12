@@ -1,9 +1,10 @@
 "use client";
 
-import {Leitor} from "@prisma/client";
+import {Midia} from "@prisma/client";
 import {formatDate} from "@/utils/helpers.ts";
 import Link from "next/link";
 import {useState, useEffect} from "react";
+import {mediaTranslate} from "@/domain/translation.ts";
 
 interface AlertState {
     show: boolean;
@@ -11,14 +12,14 @@ interface AlertState {
     tipo: 'sucesso' | 'erro';
 }
 
-export default function LeitoresPage() {
-    const [leitores, setLeitores] = useState<Leitor[]>([]);
+export default function MidiasPage() {
+    const [midias, setMidias] = useState<Midia[]>([]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetchLeitores();
+        fetchMidias();
     }, []);
 
 
@@ -36,25 +37,25 @@ export default function LeitoresPage() {
         }
     }, []);
 
-    const fetchLeitores = async () => {
+    const fetchMidias = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/leitores');
+            const response = await fetch('/api/midias');
             const data = await response.json();
 
             if (response.ok) {
-                setLeitores(data.dados || []);
+                setMidias(data.dados || []);
             } else {
                 setAlert({
                     show: true,
-                    message: data.erro?.mensagem || 'Erro ao carregar leitores',
+                    message: data.erro?.mensagem || 'Erro ao carregar mídias',
                     tipo: 'erro'
                 });
             }
         } catch (erro: any) {
             setAlert({
                 show: true,
-                message: erro.message || 'Erro ao carregar leitores',
+                message: erro.message || 'Erro ao carregar mídias',
                 tipo: 'erro'
             });
         } finally {
@@ -62,36 +63,35 @@ export default function LeitoresPage() {
         }
     };
 
-    const handleExcluir = async (leitorId: string) => {
-        setLoadingId(leitorId);
+    const handleExcluir = async (midiaId: string) => {
+        setLoadingId(midiaId);
 
         try {
-            const response = await fetch(`/api/leitores/${leitorId}`, {
+            const response = await fetch(`/api/midias/${midiaId}`, {
                 method: 'DELETE',
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // Remove deleted leitor from list
                 // updater funcional evita closure stale em deletes concorrentes
-                setLeitores(prev => prev.filter(l => l.id !== leitorId));
+                setMidias(prev => prev.filter(m => m.id !== midiaId));
                 setAlert({
                     show: true,
-                    message: data.mensagem || 'Leitor deletado com sucesso',
+                    message: data.mensagem || 'Mídia deletada com sucesso',
                     tipo: 'sucesso'
                 });
             } else {
                 setAlert({
                     show: true,
-                    message: data.erro?.mensagem || 'Erro ao deletar leitor',
+                    message: data.erro?.mensagem || 'Erro ao deletar mídia',
                     tipo: 'erro'
                 });
             }
         } catch (erro: any) {
             setAlert({
                 show: true,
-                message: erro.message || 'Erro ao deletar leitor',
+                message: erro.message || 'Erro ao deletar mídia',
                 tipo: 'erro'
             });
         } finally {
@@ -142,53 +142,48 @@ export default function LeitoresPage() {
             )}
             <div>
                 <h1 className="text-3xl text-center font-bold mt-6">
-                    Lista de Leitores
+                    Lista de Mídias
                 </h1>
                 <div className={"items-center mb-6"}>
-                    <Link href={"leitores/create"}>
+                    <Link href={"/midias/create"}>
                         <div className={"flex justify-end items-center mb-4 mr-6"}>
-                            <button className={"btn-edit"}>Adicionar Leitor</button>
+                            <button className={"btn-edit"}>Adicionar Mídia</button>
                         </div>
                     </Link>
-                    {leitores.length === 0 && (
+                    {midias.length === 0 && (
                         <div className="p-8 text-center text-gray-500">
-                            <h1>Nenhum leitor encontrado.</h1>
+                            <h1>Nenhuma mídia encontrada.</h1>
                         </div>
                     )}
-                    {leitores.length > 0 && (
+                    {midias.length > 0 && (
                         <div className="bg-white flex justify-center rounded shadow p-6">
                             <table className="border-collapse w-3/4">
                                 <thead>
                                 <tr className="border-b">
-                                    <th className="text-center p-4">Nome</th>
-                                    <th className="text-center p-4">Email</th>
-                                    <th className="text-center p-4">CPF</th>
-                                    <th className="text-center p-4">Data de Nascimento</th>
-                                    <th className="text-center p-4">Estado</th>
+                                    <th className="text-center p-4">Título</th>
+                                    <th className="text-center p-4">Tipo</th>
+                                    <th className="text-center p-4">Data de Criação</th>
                                     <th className="text-center p-4">Ações</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {leitores.map((leitor) => (
-                                    <tr key={leitor.id}>
-                                        <td className="p-5 text-center">{leitor.nome}</td>
-                                        <td className="p-5 text-center">{leitor.email || "-"}</td>
-                                        <td className="p-5 text-center">{leitor.cpf || "-"}</td>
-                                        <td className="p-5 text-center">{leitor.dataDeNascimento ?
-                                            formatDate(leitor.dataDeNascimento) : "-"}</td>
-                                        <td className="p-5 text-center">{leitor.estado}</td>
+                                {midias.map((midia) => (
+                                    <tr key={midia.id}>
+                                        <td className="p-5 text-center">{midia.titulo}</td>
+                                        <td className="p-5 text-center">{mediaTranslate[midia.tipo]}</td>
+                                        <td className="p-5 text-center">{formatDate(midia.dataCriacao)}</td>
                                         <td className="p-5 text-center">
-                                            <Link href={`/leitores/${leitor.id}/edit`}>
+                                            <Link href={`/midias/${midia.id}`}>
                                                 <button className="btn-edit mr-6">
-                                                    Editar
+                                                    Visualizar
                                                 </button>
                                             </Link>
                                             <button
                                                 className="btn-delete"
-                                                onClick={() => handleExcluir(leitor.id)}
-                                                disabled={loadingId === leitor.id}
+                                                onClick={() => handleExcluir(midia.id)}
+                                                disabled={loadingId === midia.id}
                                             >
-                                                {loadingId === leitor.id ? (
+                                                {loadingId === midia.id ? (
                                                     <>
                                                         Deletando...
                                                     </>

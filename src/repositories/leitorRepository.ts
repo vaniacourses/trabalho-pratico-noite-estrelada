@@ -27,7 +27,8 @@ export class LeitorRepository {
 
         data.email = data.email?.trim() || undefined
         data.cpf = data.cpf?.trim() || undefined
-        data.dataDeNascimento = data.dataDeNascimento?.trim() || undefined
+        // dataDeNascimento chega como string ISO do JSON ou como Date; trim() não se aplica a Date
+        data.dataDeNascimento = data.dataDeNascimento || undefined
 
         return prisma.leitor.create({
             data,

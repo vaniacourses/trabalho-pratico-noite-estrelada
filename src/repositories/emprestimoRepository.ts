@@ -134,7 +134,7 @@ export class EmprestimoRepository {
                 leitor: true,
                 exemplar: {
                     include: {
-                        publicacao: true,
+                        midia: true, // era 'publicacao'; renomeado para 'midia' junto com o schema
                     },
                 },
             },
