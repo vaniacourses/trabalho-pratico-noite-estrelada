@@ -1,5 +1,5 @@
 import {prisma} from "@/lib/prisma";
-import type {Emprestimo} from "@prisma/client";
+import type {Emprestimo, EstadoEmprestimo} from "@prisma/client";
 
 /**
  * EmprestimoRepository
@@ -137,7 +137,7 @@ export class EmprestimoRepository {
                 idLeitor,
                 idExemplar,
                 dataExpiracao,
-                estado: "PENDENTE",
+                estado: "PENDENTE" as EstadoEmprestimo,
             },
         });
     }
@@ -148,12 +148,12 @@ export class EmprestimoRepository {
     async aprovarEmprestimo(idEmprestimo: string): Promise<Emprestimo> {
         return prisma.$transaction(async (tx) => {
             const emprestimo = await tx.emprestimo.findUnique({
-                where: { id: idEmprestimo },
-                include: { exemplar: true },
+                where: {id: idEmprestimo},
+                include: {exemplar: true},
             });
 
             if (!emprestimo) throw new Error("Empréstimo não encontrado");
-            if (emprestimo.estado !== "PENDENTE") throw new Error("Apenas solicitações pendentes podem ser aprovadas");
+            if (emprestimo.estado !== "PENDENTE" as EstadoEmprestimo) throw new Error("Apenas solicitações pendentes podem ser aprovadas");
 
             if (emprestimo.exemplar.estado !== "DISPONIVEL") {
                 throw new Error(
@@ -162,13 +162,13 @@ export class EmprestimoRepository {
             }
 
             const aprovado = await tx.emprestimo.update({
-                where: { id: idEmprestimo },
-                data: { estado: "CORRENTE" },
+                where: {id: idEmprestimo},
+                data: {estado: "CORRENTE"},
             });
 
             await tx.exemplar.update({
-                where: { id: emprestimo.idExemplar },
-                data: { estado: "EMPRESTADO" },
+                where: {id: emprestimo.idExemplar},
+                data: {estado: "EMPRESTADO"},
             });
 
             return aprovado;
@@ -180,15 +180,15 @@ export class EmprestimoRepository {
      */
     async rejeitarEmprestimo(idEmprestimo: string): Promise<Emprestimo> {
         const emprestimo = await prisma.emprestimo.findUnique({
-            where: { id: idEmprestimo },
+            where: {id: idEmprestimo},
         });
 
         if (!emprestimo) throw new Error("Empréstimo não encontrado");
-        if (emprestimo.estado !== "PENDENTE") throw new Error("Apenas solicitações pendentes podem ser rejeitadas");
+        if (emprestimo.estado !== "PENDENTE" as EstadoEmprestimo) throw new Error("Apenas solicitações pendentes podem ser rejeitadas");
 
         return prisma.emprestimo.update({
-            where: { id: idEmprestimo },
-            data: { estado: "REJEITADO", dataFinalizacao: new Date() },
+            where: {id: idEmprestimo},
+            data: {estado: "REJEITADO" as EstadoEmprestimo, dataFinalizacao: new Date()},
         });
     }
 
@@ -197,16 +197,16 @@ export class EmprestimoRepository {
      */
     async listarPendentes() {
         return prisma.emprestimo.findMany({
-            where: { estado: "PENDENTE" },
+            where: {estado: "PENDENTE" as EstadoEmprestimo},
             include: {
-                leitor: { select: { id: true, nome: true, email: true } },
+                leitor: {select: {id: true, nome: true, email: true}},
                 exemplar: {
                     include: {
-                        midia: { select: { id: true, titulo: true, tipo: true } },
+                        midia: {select: {id: true, titulo: true, tipo: true}},
                     },
                 },
             },
-            orderBy: { dataInicio: "asc" },
+            orderBy: {dataInicio: "asc"},
         });
     }
 
