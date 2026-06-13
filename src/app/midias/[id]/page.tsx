@@ -122,50 +122,61 @@ export default function ViewMidiaPage() {
         <main>
             {alert.show && (
                 <>
-                <div
-                    className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`}`}
-                    role="alert">
-                    <div className="flex items-center">
-                        {alert.tipo === 'sucesso' ? <span className="mr-3 text-lg font-bold">✓</span> :
-                            <span className="mr-3 text-lg font-bold">✕</span>}
-                        <span>{alert.message}</span>
+                    <div
+                        className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`}`}
+                        role="alert">
+                        <div className="flex items-center">
+                            {alert.tipo === 'sucesso' ? <span className="mr-3 text-lg font-bold">✓</span> :
+                                <span className="mr-3 text-lg font-bold">✕</span>}
+                            <span>{alert.message}</span>
+                        </div>
+                        <button type="button"
+                                className={`ml-4 text-lg font-bold hover:opacity-70 transition-opacity ${alert.tipo === 'sucesso' ? 'text-green-700' : 'text-red-700'}`}
+                                onClick={() => setAlert(prev => ({...prev, show: false}))} aria-label="Close">×
+                        </button>
                     </div>
-                    <button type="button"
-                            className={`ml-4 text-lg font-bold hover:opacity-70 transition-opacity ${alert.tipo === 'sucesso' ? 'text-green-700' : 'text-red-700'}`}
-                            onClick={() => setAlert(prev => ({...prev, show: false}))} aria-label="Close">×
-                    </button>
-                </div>
                 </>
             )}
 
             <div className="grid  grid-cols-6 justify-center w-full mt-5">
-            <div className="bg-white rounded shadow mt-6 p-5 col-span-2 col-start-3">
-            <h1 className="text-2xl font-bold mb-4">{midia.titulo}</h1>
+                <div className="bg-white rounded shadow mt-6 p-5 col-span-2 col-start-3">
+                    <h1 className="text-2xl font-bold mb-4">{midia.titulo}</h1>
 
-                <div className={"p-5"}>
+                    <div className={"p-5"}>
 
-                    <div className={"mb-2"}><strong>Tipo:</strong> {mediaTranslate[midia.tipo as TipoDeMidia]}</div>
+                        <div className={"mb-2"}><strong>Tipo:</strong> {mediaTranslate[midia.tipo as TipoDeMidia]}</div>
 
-                    <div><strong className={"mb-2"}>Data de Criação:</strong> {formatDate(midia.dataCriacao)}</div>
+                        <div><strong className={"mb-2"}>Data de Criação:</strong> {formatDate(midia.dataCriacao)}</div>
 
-                    <div className={"mb-2"}>
-                        {renderData()}
+                        <div className={"mb-2"}>
+                            {renderData()}
+                        </div>
+
+                        <div className={"flex items-center mt-4"}>
+                            <strong className={"mb-2 mr-3"}>
+                                Exemplares:
+                            </strong>
+                            <Link href={`/midias/${midia.id}/exemplares`} className="btn-edit">
+                                <button>
+                                    Lista de Exemplares
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-around">
+                        <Link href="/midias" className="btn btn-delete">
+                            <button>
+                                Voltar
+                            </button>
+                        </Link>
+                        <Link href={`/midias/${midia.id}/edit`} className="btn-edit">
+                            <button>
+                                Editar
+                            </button>
+                        </Link>
                     </div>
                 </div>
-
-                <div className="mt-6 flex justify-around">
-                    <Link href="/midias" className="btn btn-delete">
-                        <button>
-                            Voltar
-                        </button>
-                    </Link>
-                    <Link href={`/midias/${midia.id}/edit`} className="btn-edit">
-                        <button>
-                            Editar
-                        </button>
-                    </Link>
-                </div>
-            </div>
             </div>
         </main>
     );

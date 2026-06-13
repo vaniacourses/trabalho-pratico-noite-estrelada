@@ -1,10 +1,11 @@
 "use client";
 
-import {Midia} from "@prisma/client";
+import {Exemplar} from "@prisma/client";
 import {formatDate} from "@/utils/helpers.ts";
 import Link from "next/link";
 import {useState, useEffect} from "react";
-import {mediaTranslate} from "@/domain/translation.ts";
+import {exemplarStateTranslate} from "@/domain/translation.ts";
+import {useParams} from "next/navigation";
 
 interface AlertState {
     show: boolean;
@@ -12,16 +13,18 @@ interface AlertState {
     tipo: 'sucesso' | 'erro';
 }
 
-export default function MidiasPage() {
-    const [midias, setMidias] = useState<Midia[]>([]);
+export default function ExemplarListPage() {
+    const params = useParams();
+    const midiaId = params?.id as string;
+
+    const [exemplares, setExemplares] = useState<Exemplar[]>([]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetchMidias();
-    }, []);
-
+        fetchExemplares();
+    }, [midiaId]);
 
     useEffect(() => {
         const message = sessionStorage.getItem('successMessage');
@@ -37,25 +40,25 @@ export default function MidiasPage() {
         }
     }, []);
 
-    const fetchMidias = async () => {
+    const fetchExemplares = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/midias');
+            const response = await fetch(`/api/midias/${midiaId}/exemplares`);
             const data = await response.json();
 
             if (response.ok) {
-                setMidias(data.dados || []);
+                setExemplares(data.dados || []);
             } else {
                 setAlert({
                     show: true,
-                    message: data.erro?.mensagem || 'Erro ao carregar mídias',
+                    message: data.erro?.mensagem || 'Erro ao carregar exemplares',
                     tipo: 'erro'
                 });
             }
         } catch (erro: any) {
             setAlert({
                 show: true,
-                message: erro.message || 'Erro ao carregar mídias',
+                message: erro.message || 'Erro ao carregar exemplares',
                 tipo: 'erro'
             });
         } finally {
@@ -63,36 +66,38 @@ export default function MidiasPage() {
         }
     };
 
-    const handleExcluir = async (midiaId: string) => {
-        setLoadingId(midiaId);
+    const handleExcluir = async (exemplarId: string) => {
+        setLoadingId(exemplarId);
 
         try {
-            const response = await fetch(`/api/midias/${midiaId}`, {
+            const response = await fetch(`/api/midias/${midiaId}/exemplares/${exemplarId}`, {
                 method: 'DELETE',
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                setMidias(midias.filter(m => m.id !== midiaId));
+                setExemplares(exemplares.filter(e => e.id !== exemplarId));
                 setAlert({
                     show: true,
-                    message: data.mensagem || 'Mídia deletada com sucesso',
+                    message: data.mensagem || 'Exemplar deletado com sucesso',
                     tipo: 'sucesso'
                 });
             } else {
                 setAlert({
                     show: true,
-                    message: data.erro?.mensagem || 'Erro ao deletar mídia',
+                    message: data.erro?.mensagem || 'Erro ao deletar exemplar',
                     tipo: 'erro'
                 });
             }
         } catch (erro: any) {
             setAlert({
                 show: true,
-                message: erro.message || 'Erro ao deletar mídia',
+                message: erro.message || 'Erro ao deletar exemplar',
                 tipo: 'erro'
             });
+        } finally {
+            setLoadingId(null);
         }
     };
 
@@ -108,7 +113,6 @@ export default function MidiasPage() {
 
     return (
         <main>
-
             {alert.show && (
                 <div
                     className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${
@@ -138,53 +142,50 @@ export default function MidiasPage() {
             )}
             <div>
                 <h1 className="text-3xl text-center font-bold mt-6">
-                    Lista de Mídias
+                    Lista de Exemplares
                 </h1>
                 <div className={"items-center mb-6"}>
-                    <Link href={"/midias/create"}>
+                    <Link href={`/midias/${midiaId}/exemplares/create`}>
                         <div className={"flex justify-end items-center mb-4 mr-6"}>
-                            <button className={"btn-edit"}>Adicionar Mídia</button>
+                            <button className={"btn-edit"}>Adicionar Exemplar</button>
                         </div>
                     </Link>
-                    {midias.length === 0 && (
+                    {exemplares.length === 0 && (
                         <div className="p-8 text-center text-gray-500">
-                            <h1>Nenhuma mídia encontrada.</h1>
+                            <h1>Nenhum exemplar encontrado.</h1>
                         </div>
                     )}
-                    {midias.length > 0 && (
+                    {exemplares.length > 0 && (
                         <div className="bg-white flex justify-center rounded shadow p-6">
                             <table className="border-collapse w-3/4">
                                 <thead>
                                 <tr className="border-b">
-                                    <th className="text-center p-4">Título</th>
-                                    <th className="text-center p-4">Tipo</th>
+                                    <th className="text-center p-4">Código</th>
+                                    <th className="text-center p-4">Estado</th>
                                     <th className="text-center p-4">Data de Criação</th>
+                                    <th className="text-center p-4">Data de Atualização</th>
                                     <th className="text-center p-4">Ações</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {midias.map((midia) => (
-                                    <tr key={midia.id}>
-                                        <td className="p-5 text-center">{midia.titulo}</td>
-                                        <td className="p-5 text-center">{mediaTranslate[midia.tipo]}</td>
-                                        <td className="p-5 text-center">{formatDate(midia.dataCriacao)}</td>
-                                        <td className="p-5 text-center w-2/5">
-                                            <Link href={`/midias/${midia.id}`}>
+                                {exemplares.map((exemplar) => (
+                                    <tr key={exemplar.id}>
+                                        <td className="p-5 text-center">{exemplar.codigo}</td>
+                                        <td className="p-5 text-center">{exemplarStateTranslate[exemplar.estado]}</td>
+                                        <td className="p-5 text-center">{formatDate(exemplar.dataCriacao)}</td>
+                                        <td className="p-5 text-center">{formatDate(exemplar.dataAtualizacao)}</td>
+                                        <td className="p-5 text-center">
+                                            <Link href={`/midias/${midiaId}/exemplares/${exemplar.id}/edit`}>
                                                 <button className="btn-edit mr-6">
-                                                    Visualizar
-                                                </button>
-                                            </Link>
-                                            <Link href={`/midias/${midia.id}/exemplares/create`}>
-                                                <button className="btn-create mr-6">
-                                                    Adicionar Exemplar
+                                                    Editar
                                                 </button>
                                             </Link>
                                             <button
                                                 className="btn-delete"
-                                                onClick={() => handleExcluir(midia.id)}
-                                                disabled={loadingId === midia.id}
+                                                onClick={() => handleExcluir(exemplar.id)}
+                                                disabled={loadingId === exemplar.id}
                                             >
-                                                {loadingId === midia.id ? (
+                                                {loadingId === exemplar.id ? (
                                                     <>
                                                         Deletando...
                                                     </>
@@ -201,6 +202,11 @@ export default function MidiasPage() {
                     )}
                 </div>
             </div>
+            <Link href={`/midias/${midiaId}`}>
+                <div className={"flex justify-start items-center mb-4 ml-6"}>
+                    <button className={"btn-delete"}>Voltar</button>
+                </div>
+            </Link>
         </main>
     );
 }

@@ -64,8 +64,8 @@ model Leitor {
   dataCriacao      DateTime     @default(now())
   dataAtualizacao  DateTime     @updatedAt
 
-  emprestimos       Emprestimo[]
-  reservas          Reserva[]
+  emprestimos Emprestimo[]
+  reservas    Reserva[]
 
   @@map("usuarios")
 }
@@ -86,6 +86,7 @@ model Midia {
 model Exemplar {
   id              String         @id @default(cuid())
   idMidia         String
+  codigo          String         @unique
   estado          EstadoExemplar @default(DISPONIVEL)
   dataCriacao     DateTime       @default(now())
   dataAtualizacao DateTime       @updatedAt
@@ -111,10 +112,9 @@ model Emprestimo {
   leitor   Leitor   @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
   exemplar Exemplar @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
 
-  @@map("emprestimos")
   @@index([idLeitor])
   @@index([idExemplar])
-
+  @@map("emprestimos")
 }
 
 model Reserva {

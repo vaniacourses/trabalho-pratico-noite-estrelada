@@ -220,7 +220,7 @@ export class EmprestimoRepository {
                 leitor: true,
                 exemplar: {
                     include: {
-                        publicacao: true,
+                        midia: true,
                     },
                 },
             },
