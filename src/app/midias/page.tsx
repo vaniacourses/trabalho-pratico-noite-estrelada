@@ -174,11 +174,11 @@ export default function MidiasPage() {
                                                     Visualizar
                                                 </button>
                                             </Link>
-                                            <Link href={`/midias/${midia.id}/exemplares/create`}>
-                                                <button className="btn-create mr-6">
-                                                    Adicionar Exemplar
-                                                </button>
-                                            </Link>
+                                            {/*<Link href={`/midias/${midia.id}/exemplares/create`}>*/}
+                                            {/*    <button className="btn-create mr-6">*/}
+                                            {/*        Adicionar Exemplar*/}
+                                            {/*    </button>*/}
+                                            {/*</Link>*/}
                                             <button
                                                 className="btn-delete"
                                                 onClick={() => handleExcluir(midia.id)}
