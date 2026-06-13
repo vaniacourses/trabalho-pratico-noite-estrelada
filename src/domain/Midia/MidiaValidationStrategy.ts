@@ -10,7 +10,9 @@ export class DvdValidationStrategy implements MidiaValidationStrategy {
         const dvd = midia.dados as IDvdDTO;
         const codigosDeRegiao = ["0", "1", "4", "Todas"]
 
-        if (dvd.duracao > 120) {
+        if (dvd.duracao <= 0) {
+            erros.duracao = "Duração do DVD deve ser maior que 0 minutos";
+        } else if (dvd.duracao > 120) {
             erros.duracao = "Duração do DVD deve ser menor ou igual a 120 minutos";
         }
 
@@ -29,7 +31,9 @@ export class CdValidationStrategy implements MidiaValidationStrategy {
         const erros: Record<string, string> = {};
         const cd = midia.dados as ICdDTO;
 
-        if (cd.duracao > 80) {
+        if (cd.duracao <= 0) {
+            erros.duracao = "Duração do CD deve ser maior que 0 minutos";
+        } else if (cd.duracao > 80) {
             erros.duracao = "Duração do CD deve ser menor ou igual a 80 minutos"
         }
 
@@ -58,9 +62,9 @@ export class PublicacaoValidationStrategy implements MidiaValidationStrategy {
             erros.paginas = "Número de páginas inválido";
         }
 
-        // codigo isbn valido
-        if (!/^\d{9}[\dX]$/.test(isbn)) {
-            erros.isbn = "ISBN deve conter 10 dígitos ou 9 dígitos seguidos de 'X'";
+        // ISBN-10: 9 digits + digit or X; ISBN-13: 13 digits
+        if (!/^\d{9}[\dX]$/.test(isbn) && !/^\d{13}$/.test(isbn)) {
+            erros.isbn = "ISBN deve ser ISBN-10 (10 dígitos, último pode ser 'X') ou ISBN-13 (13 dígitos)";
         }
 
         return {erros};

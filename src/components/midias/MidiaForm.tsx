@@ -38,13 +38,10 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
     const [dados, setDados] = useState<any>(initialData?.dados ?? defaultDadosFor(initialTipo));
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-    // Ensure when switching type (on create) the dados fields update to the right shape
+    // Reset dados to clean defaults when the type changes on create (avoids stale fields leaking)
     useEffect(() => {
         if (!initialData) {
-            setDados((prev: any) => {
-                const defaults = defaultDadosFor(tipo);
-                return {...defaults, ...prev};
-            });
+            setDados(defaultDadosFor(tipo));
         }
     }, [tipo, initialData]);
 

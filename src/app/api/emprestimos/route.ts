@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
     }
 
     const emprestimoService = new EmprestimoService();
-    const emprestimo = await emprestimoService.finalizarEmprestimo(id);
+    const emprestimo = await emprestimoService.obterEmprestimoPorId(id);
 
     return NextResponse.json(
       {
@@ -117,6 +117,21 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   } catch (erro: any) {
+    const erroAplicacao = erro as IErroAplicacao;
+
+    if (erroAplicacao?.statusHttp) {
+      return NextResponse.json(
+        {
+          sucesso: false,
+          erro: {
+            codigo: erroAplicacao.codigo,
+            mensagem: erroAplicacao.mensagem,
+          },
+        },
+        { status: erroAplicacao.statusHttp }
+      );
+    }
+
     console.error("Erro ao buscar empréstimo:", erro);
     return NextResponse.json(
       {

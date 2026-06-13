@@ -82,8 +82,8 @@ export class MidiaService {
 
         if (!midia) {
             throw this.criarErro(
-                "LEITOR_NAO_ENCONTRADO",
-                "Leitor não encontrado",
+                "MIDIA_NAO_ENCONTRADA",
+                "Mídia não encontrada",
                 404
             );
         }

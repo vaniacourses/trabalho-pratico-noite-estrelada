@@ -25,10 +25,6 @@ export class LeitorRepository {
         data: any
     ): Promise<Leitor> {
 
-        data.email = data.email?.trim() || undefined
-        data.cpf = data.cpf?.trim() || undefined
-        data.dataDeNascimento = data.dataDeNascimento?.trim() || undefined
-
         return prisma.leitor.create({
             data,
         });
