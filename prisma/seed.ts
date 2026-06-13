@@ -1,28 +1,25 @@
 import { prisma } from "@/lib/prisma";
 
-/**
- * Script para popular o banco de dados com dados iniciais (seed)
- * Execute com: npm run db:seed
- */
 async function main() {
   console.log("🌱 Iniciando seed do banco de dados...");
 
   try {
-    // Limpar dados existentes (ordem importa por causa de foreign keys)
     console.log("Limpando dados existentes...");
     await prisma.emprestimo.deleteMany();
     await prisma.reserva.deleteMany();
     await prisma.exemplar.deleteMany();
-    await prisma.publicacao.deleteMany();
+    await prisma.midia.deleteMany();
     await prisma.leitor.deleteMany();
 
-    // Criar leitores
-    console.log("Criando leitores...");
+    // Usuários
+    console.log("Criando usuários...");
     const leitor1 = await prisma.leitor.create({
       data: {
         nome: "João Silva",
         email: "joao@example.com",
-        senha: "senha123", // Em produção, usar hash com bcrypt
+        senha: "senha123",
+        cpf: "111.111.111-11",
+        tipo: "LEITOR",
         estado: "REGULAR",
       },
     });
@@ -32,6 +29,8 @@ async function main() {
         nome: "Maria Santos",
         email: "maria@example.com",
         senha: "senha456",
+        cpf: "222.222.222-22",
+        tipo: "LEITOR",
         estado: "REGULAR",
       },
     });
@@ -41,125 +40,135 @@ async function main() {
         nome: "Pedro Oliveira",
         email: "pedro@example.com",
         senha: "senha789",
+        tipo: "LEITOR",
         estado: "INCOMPLETO",
       },
     });
 
-    // Criar publicações
-    console.log("Criando publicações...");
-    const publicacao1 = await prisma.publicacao.create({
+    await prisma.leitor.create({
       data: {
-        isbn: "978-0-13-468599-1",
+        nome: "Ana Atendente",
+        email: "atendente@biblioteca.com",
+        senha: "atend123",
+        tipo: "ATENDENTE",
+        estado: "REGULAR",
+      },
+    });
+
+    await prisma.leitor.create({
+      data: {
+        nome: "Carlos Gerente",
+        email: "gerente@biblioteca.com",
+        senha: "gerente123",
+        tipo: "GERENTE",
+        estado: "REGULAR",
+      },
+    });
+
+    // Mídias
+    console.log("Criando mídias...");
+    const midia1 = await prisma.midia.create({
+      data: {
+        tipo: "PUBLICACAO",
         titulo: "Clean Code",
+        dados: { autor: "Robert C. Martin", isbn: "9780132350884", paginas: 431 },
       },
     });
 
-    const publicacao2 = await prisma.publicacao.create({
+    const midia2 = await prisma.midia.create({
       data: {
-        isbn: "978-0-201-63361-0",
+        tipo: "PUBLICACAO",
         titulo: "Design Patterns",
+        dados: { autor: "Gang of Four", isbn: "9780201633610", paginas: 395 },
       },
     });
 
-    const publicacao3 = await prisma.publicacao.create({
+    const midia3 = await prisma.midia.create({
       data: {
-        isbn: "978-0-13-235088-4",
-        titulo: "The Pragmatic Programmer",
+        tipo: "DVD",
+        titulo: "The Matrix",
+        dados: { diretor: "Wachowski", codigoDeRegiao: "1", legendas: ["pt", "en"], duracao: 136 },
       },
     });
 
-    // Criar exemplares
+    const midia4 = await prisma.midia.create({
+      data: {
+        tipo: "CD",
+        titulo: "Dark Side of the Moon",
+        dados: { artista: "Pink Floyd", faixas: ["Speak to Me:2", "Breathe:2", "Time:6"], duracao: 43 },
+      },
+    });
+
+    // Exemplares
     console.log("Criando exemplares...");
     const exemplar1 = await prisma.exemplar.create({
-      data: {
-        idPublicacao: publicacao1.id,
-        estado: "DISPONIVEL",
-      },
+      data: { idMidia: midia1.id, estado: "DISPONIVEL" },
     });
 
     const exemplar2 = await prisma.exemplar.create({
-      data: {
-        idPublicacao: publicacao1.id,
-        estado: "DISPONIVEL",
-      },
+      data: { idMidia: midia1.id, estado: "DISPONIVEL" },
     });
 
     const exemplar3 = await prisma.exemplar.create({
-      data: {
-        idPublicacao: publicacao2.id,
-        estado: "DISPONIVEL",
-      },
+      data: { idMidia: midia2.id, estado: "DISPONIVEL" },
     });
 
     const exemplar4 = await prisma.exemplar.create({
-      data: {
-        idPublicacao: publicacao3.id,
-        estado: "DISPONIVEL",
-      },
+      data: { idMidia: midia3.id, estado: "DISPONIVEL" },
     });
 
-    // Criar empréstimos
+    // Empréstimos
     console.log("Criando empréstimos...");
     const dataExpiracao = new Date();
     dataExpiracao.setDate(dataExpiracao.getDate() + 14);
 
-    const emprestimo1 = await prisma.$transaction(async (tx) => {
-      const emp = await tx.emprestimo.create({
-        data: {
-          idLeitor: leitor1.id,
-          idExemplar: exemplar1.id,
-          dataExpiracao,
-          estado: "CORRENTE",
-        },
+    await prisma.$transaction(async (tx) => {
+      await tx.emprestimo.create({
+        data: { idLeitor: leitor1.id, idExemplar: exemplar1.id, dataExpiracao, estado: "CORRENTE" },
       });
-
       await tx.exemplar.update({
         where: { id: exemplar1.id },
         data: { estado: "EMPRESTADO" },
       });
-
-      return emp;
     });
 
-    const emprestimo2 = await prisma.$transaction(async (tx) => {
-      const emp = await tx.emprestimo.create({
-        data: {
-          idLeitor: leitor2.id,
-          idExemplar: exemplar3.id,
-          dataExpiracao,
-          estado: "CORRENTE",
-        },
+    await prisma.$transaction(async (tx) => {
+      await tx.emprestimo.create({
+        data: { idLeitor: leitor2.id, idExemplar: exemplar3.id, dataExpiracao, estado: "CORRENTE" },
       });
-
       await tx.exemplar.update({
         where: { id: exemplar3.id },
         data: { estado: "EMPRESTADO" },
       });
-
-      return emp;
     });
 
-    // Criar reservas
+    // Reservas
     console.log("Criando reservas...");
     const dataExpiracaoReserva = new Date();
     dataExpiracaoReserva.setDate(dataExpiracaoReserva.getDate() + 7);
 
-    const reserva1 = await prisma.reserva.create({
+    await prisma.reserva.create({
       data: {
         idLeitor: leitor3.id,
-        idPublicacao: publicacao2.id,
-        dataExpiracao: dataExpiracaoReserva,
+        idMidia: midia2.id,
+        dataMidia: dataExpiracaoReserva,
         estado: "EM_ESPERA",
       },
     });
 
     console.log("✅ Seed concluído com sucesso!");
-    console.log("\n📊 Resumo dos dados criados:");
-    console.log(`- Leitores: 3`);
-    console.log(`- Publicações: 3`);
-    console.log(`- Exemplares: 4`);
-    console.log(`- Empréstimos: 2`);
-    console.log(`- Reservas: 1`);
+    console.log("\n📊 Resumo:");
+    console.log("  Usuários: 5 (3 leitores, 1 atendente, 1 gerente)");
+    console.log("  Mídias: 4 (2 publicações, 1 DVD, 1 CD)");
+    console.log("  Exemplares: 4");
+    console.log("  Empréstimos: 2");
+    console.log("  Reservas: 1");
+    console.log("\n🔑 Credenciais de teste:");
+    console.log("  [LEITOR]    joao@example.com / senha123");
+    console.log("  [LEITOR]    maria@example.com / senha456");
+    console.log("  [LEITOR]    pedro@example.com / senha789");
+    console.log("  [ATENDENTE] atendente@biblioteca.com / atend123");
+    console.log("  [GERENTE]   gerente@biblioteca.com / gerente123");
   } catch (error) {
     console.error("❌ Erro ao fazer seed:", error);
     process.exit(1);

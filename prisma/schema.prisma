@@ -26,9 +26,11 @@ enum EstadoExemplar {
 }
 
 enum EstadoEmprestimo {
+  PENDENTE
   CORRENTE
   ATRASADO
   FINALIZADO
+  REJEITADO
 }
 
 enum EstadoReserva {
@@ -43,6 +45,12 @@ enum TipoDeMidia {
   CD
 }
 
+enum TipoUsuario {
+  LEITOR
+  ATENDENTE
+  GERENTE
+}
+
 // Models
 model Leitor {
   id               String       @id @default(cuid())
@@ -51,6 +59,7 @@ model Leitor {
   dataDeNascimento DateTime?
   email            String?
   senha            String
+  tipo             TipoUsuario  @default(LEITOR)
   estado           EstadoLeitor @default(INCOMPLETO)
   dataCriacao      DateTime     @default(now())
   dataAtualizacao  DateTime     @updatedAt
@@ -58,7 +67,7 @@ model Leitor {
   emprestimos       Emprestimo[]
   reservas          Reserva[]
 
-  @@map("leitores")
+  @@map("usuarios")
 }
 
 model Midia {

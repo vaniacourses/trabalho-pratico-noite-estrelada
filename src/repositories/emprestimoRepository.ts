@@ -125,6 +125,92 @@ export class EmprestimoRepository {
     }
 
     /**
+     * Cria uma solicitação de empréstimo pendente (sem alterar o exemplar ainda)
+     */
+    async solicitarEmprestimo(
+        idLeitor: string,
+        idExemplar: string,
+        dataExpiracao: Date
+    ): Promise<Emprestimo> {
+        return prisma.emprestimo.create({
+            data: {
+                idLeitor,
+                idExemplar,
+                dataExpiracao,
+                estado: "PENDENTE",
+            },
+        });
+    }
+
+    /**
+     * Aprova uma solicitação: muda para CORRENTE e marca exemplar como EMPRESTADO
+     */
+    async aprovarEmprestimo(idEmprestimo: string): Promise<Emprestimo> {
+        return prisma.$transaction(async (tx) => {
+            const emprestimo = await tx.emprestimo.findUnique({
+                where: { id: idEmprestimo },
+                include: { exemplar: true },
+            });
+
+            if (!emprestimo) throw new Error("Empréstimo não encontrado");
+            if (emprestimo.estado !== "PENDENTE") throw new Error("Apenas solicitações pendentes podem ser aprovadas");
+
+            if (emprestimo.exemplar.estado !== "DISPONIVEL") {
+                throw new Error(
+                    "Não é possível aprovar: o exemplar solicitado não está mais disponível. Rejeite esta solicitação e oriente o leitor a solicitar outro exemplar."
+                );
+            }
+
+            const aprovado = await tx.emprestimo.update({
+                where: { id: idEmprestimo },
+                data: { estado: "CORRENTE" },
+            });
+
+            await tx.exemplar.update({
+                where: { id: emprestimo.idExemplar },
+                data: { estado: "EMPRESTADO" },
+            });
+
+            return aprovado;
+        });
+    }
+
+    /**
+     * Rejeita uma solicitação pendente
+     */
+    async rejeitarEmprestimo(idEmprestimo: string): Promise<Emprestimo> {
+        const emprestimo = await prisma.emprestimo.findUnique({
+            where: { id: idEmprestimo },
+        });
+
+        if (!emprestimo) throw new Error("Empréstimo não encontrado");
+        if (emprestimo.estado !== "PENDENTE") throw new Error("Apenas solicitações pendentes podem ser rejeitadas");
+
+        return prisma.emprestimo.update({
+            where: { id: idEmprestimo },
+            data: { estado: "REJEITADO", dataFinalizacao: new Date() },
+        });
+    }
+
+    /**
+     * Lista todas as solicitações com estado PENDENTE
+     */
+    async listarPendentes() {
+        return prisma.emprestimo.findMany({
+            where: { estado: "PENDENTE" },
+            include: {
+                leitor: { select: { id: true, nome: true, email: true } },
+                exemplar: {
+                    include: {
+                        midia: { select: { id: true, titulo: true, tipo: true } },
+                    },
+                },
+            },
+            orderBy: { dataInicio: "asc" },
+        });
+    }
+
+    /**
      * Obtém um empréstimo por ID com seus relacionamentos
      */
     async obterEmprestimoPorId(idEmprestimo: string) {

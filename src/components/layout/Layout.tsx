@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface LayoutProps {
@@ -56,7 +58,13 @@ export const AuthenticatedLayout: React.FC<LayoutProps> = ({
                 Sistema de Gerenciamento de Biblioteca
               </p>
             </div>
-            <button className="px-4 py-2 bg-brand-error text-white rounded hover:bg-opacity-90 transition-all">
+            <button
+              className="px-4 py-2 bg-brand-error text-white rounded hover:bg-opacity-90 transition-all"
+              onClick={() => {
+                localStorage.removeItem("usuario");
+                window.location.href = "/";
+              }}
+            >
               Sair
             </button>
           </div>

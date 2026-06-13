@@ -11,20 +11,18 @@ export default function Home() {
 
         <div className="flex gap-4 justify-center">
           <a
-            href="/login"
+            href="/login?contexto=leitor"
             className="px-8 py-3 bg-brand-primary text-white rounded font-semibold hover:bg-brand-primary-dark transition-colors shadow-soft"
           >
             Acessar Sistema
           </a>
           <a
-            href="/balcao"
+            href="/login?contexto=funcionario"
             className="px-8 py-3 bg-brand-secondary text-white rounded font-semibold hover:bg-brand-text transition-colors shadow-soft"
           >
             Atendimento
           </a>
         </div>
-
-
       </div>
     </div>
   );

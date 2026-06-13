@@ -29,13 +29,12 @@ export class LeitorService {
 
     async criarLeitor(dto: ILeitorDTO): Promise<ILeitorResponse> {
 
-        const {
-            nome,
-            senha,
-            email,
-            cpf,
-            dataDeNascimento,
-        } = dto
+        // Trim string fields here so avaliarEstadoDoLeitor and the repository see the same values
+        const nome = dto.nome?.trim() || dto.nome;
+        const senha = dto.senha?.trim() || dto.senha;
+        const email = dto.email?.trim() || undefined;
+        const cpf = dto.cpf?.trim() || undefined;
+        const dataDeNascimento = dto.dataDeNascimento?.trim() || undefined;
 
         // respect explicit estado if provided, otherwise evaluate from provided data
         const estado = dto.estado ?? this.avaliarEstadoDoLeitor([nome, senha, email, cpf, dataDeNascimento]);
@@ -68,6 +67,10 @@ export class LeitorService {
             return await this.repository.atualizarLeitor(id, data);
 
         } catch (error: any) {
+            // Prisma P2025: record to update not found
+            if (error?.code === "P2025") {
+                throw this.criarErro("LEITOR_NAO_ENCONTRADO", "Leitor não encontrado", 404);
+            }
             throw this.criarErro(
                 "ERRO_ATUALIZAR_LEITOR",
                 error.message || "Erro ao atualizar leitor",
@@ -80,6 +83,10 @@ export class LeitorService {
         try {
             return await this.repository.deletarLeitor(id);
         } catch (error: any) {
+            // Prisma P2025: record to delete not found
+            if (error?.code === "P2025") {
+                throw this.criarErro("LEITOR_NAO_ENCONTRADO", "Leitor não encontrado", 404);
+            }
             throw this.criarErro(
                 "ERRO_DELETAR_LEITOR",
                 error.message || "Erro ao deletar leitor",
