@@ -34,7 +34,7 @@ export class LeitorService {
         const senha = dto.senha?.trim() || dto.senha;
         const email = dto.email?.trim() || undefined;
         const cpf = dto.cpf?.trim() || undefined;
-        const dataDeNascimento = dto.dataDeNascimento?.trim() || undefined;
+        const dataDeNascimento = dto.dataDeNascimento ?? undefined;
 
         // respect explicit estado if provided, otherwise evaluate from provided data
         const estado = dto.estado ?? this.avaliarEstadoDoLeitor([nome, senha, email, cpf, dataDeNascimento]);
