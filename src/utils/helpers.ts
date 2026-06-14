@@ -31,6 +31,31 @@ export function formatCurrency(value: number): string {
 }
 
 /**
+ * Remove toda a pontuação de um CPF, mantendo apenas os dígitos.
+ * Forma canônica usada para armazenamento.
+ */
+export function normalizarCpf(value: string | null | undefined): string {
+  return (value ?? "").replace(/\D/g, "");
+}
+
+/**
+ * Formata um CPF (com ou sem pontuação) na máscara 000.000.000-00.
+ * Aplica a máscara progressivamente, permitindo valores parciais.
+ */
+export function formatCpf(value: string | null | undefined): string {
+  const onlyNumbers = normalizarCpf(value).slice(0, 11);
+
+  if (onlyNumbers.length <= 3) {
+    return onlyNumbers;
+  } else if (onlyNumbers.length <= 6) {
+    return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3)}`;
+  } else if (onlyNumbers.length <= 9) {
+    return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3, 6)}.${onlyNumbers.slice(6)}`;
+  }
+  return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3, 6)}.${onlyNumbers.slice(6, 9)}-${onlyNumbers.slice(9, 11)}`;
+}
+
+/**
  * Trunca um texto com reticências
  */
 export function truncateText(text: string, maxLength: number): string {

@@ -1,11 +1,15 @@
 "use client"
 
 import {useEffect, useState} from "react";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import Link from "next/link";
 import {Midia, TipoDeMidia} from "@prisma/client";
 import {formatDate} from "@/utils/helpers.ts";
 import {mediaTranslate} from "@/domain/translation.ts";
+import {AuthenticatedLayout} from "@/components/layout/Layout";
+import {Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components/ui/Card";
+import {Button} from "@/components/ui/Button";
+import {Alert} from "@/components/ui/Alert";
 
 interface AlertState {
     show: boolean;
@@ -13,11 +17,25 @@ interface AlertState {
     tipo: 'sucesso' | 'erro';
 }
 
+const TIPOS_FUNCIONARIO = ["ATENDENTE", "GERENTE"];
+
 export default function ViewMidiaPage() {
     const {id} = useParams();
+    const router = useRouter();
     const [midiaResp, setMidiaResp] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
+    const [isFuncionario, setIsFuncionario] = useState(false);
+
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem("usuario");
+            if (raw) {
+                const usuario = JSON.parse(raw);
+                setIsFuncionario(TIPOS_FUNCIONARIO.includes(usuario.tipo));
+            }
+        } catch {}
+    }, []);
 
     useEffect(() => {
         const message = sessionStorage.getItem('successMessage');
@@ -50,136 +68,158 @@ export default function ViewMidiaPage() {
         fetchMidia();
     }, [id]);
 
-    if (isLoading) return (<main className="flex justify-center items-center min-h-screen">Carregando...</main>);
+    const renderDetalhe = (label: string, valor: React.ReactNode) => (
+        <div className="flex justify-between gap-4 py-2 border-b border-brand-secondary/10 last:border-0">
+            <span className="text-sm font-semibold text-brand-secondary">{label}</span>
+            <span className="text-sm text-brand-text text-right">{valor}</span>
+        </div>
+    );
 
-    if (!midiaResp) {
-        return (
-            <main className="p-6">
-                {alert.show && (
-                    <div
-                        className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`}`}
-                        role="alert">
-                        <div className="flex items-center">
-                            {alert.tipo === 'sucesso' ? <span className="mr-3 text-lg font-bold">✓</span> :
-                                <span className="mr-3 text-lg font-bold">✕</span>}
-                            <span>{alert.message}</span>
-                        </div>
-                        <button type="button"
-                                className={`ml-4 text-lg font-bold hover:opacity-70 transition-opacity ${alert.tipo === 'sucesso' ? 'text-green-700' : 'text-red-700'}`}
-                                onClick={() => setAlert(prev => ({...prev, show: false}))} aria-label="Close">×
-                        </button>
-                    </div>
-                )}
-                <div className="text-center text-gray-500">Mídia não encontrada.</div>
-                <div className="mt-6 flex justify-center">
-                    <Link href="/midias" className="btn btn-delete">Voltar à lista</Link>
-                </div>
-            </main>
-        );
-    }
-
-    const midia: Midia = midiaResp as Midia;
-
-    function renderData() {
+    function renderDadosEspecificos(midia: Midia) {
         const dados: any = (midia as any).dados || {};
         switch (midia.tipo) {
             case "PUBLICACAO":
                 return (
-                    <div className="mt-2 space-y-2">
-                        <div><strong>Autor:</strong> {dados.autor}</div>
-                        <div><strong>ISBN:</strong> {dados.isbn}</div>
-                        <div><strong>Páginas:</strong> {dados.paginas}</div>
-                    </div>
+                    <>
+                        {renderDetalhe("Autor", dados.autor)}
+                        {renderDetalhe("ISBN", dados.isbn)}
+                        {renderDetalhe("Páginas", dados.paginas)}
+                    </>
                 );
             case "CD":
                 return (
-                    <div className="mt-2 space-y-2">
-                        <div><strong>Artista:</strong> {dados.artista}</div>
-                        <div>
-                            <strong>Faixas:</strong> {Array.isArray(dados.faixas) ? dados.faixas.join(', ') : dados.faixas}
-                        </div>
-                        <div><strong>Duração (min):</strong> {dados.duracao}</div>
-                    </div>
+                    <>
+                        {renderDetalhe("Artista", dados.artista)}
+                        {renderDetalhe("Faixas", Array.isArray(dados.faixas) ? dados.faixas.join(', ') : dados.faixas)}
+                        {renderDetalhe("Duração (min)", dados.duracao)}
+                    </>
                 );
             case "DVD":
                 return (
-                    <div className="mt-2 space-y-2">
-                        <div><strong>Diretor:</strong> {dados.diretor}</div>
-                        <div><strong>Código de Região:</strong> {dados.codigoDeRegiao}</div>
-                        <div>
-                            <strong>Legendas:</strong> {Array.isArray(dados.legendas) ? dados.legendas.join(', ') : dados.legendas}
-                        </div>
-                        <div><strong>Duração (min):</strong> {dados.duracao}</div>
-                    </div>
+                    <>
+                        {renderDetalhe("Diretor", dados.diretor)}
+                        {renderDetalhe("Código de Região", dados.codigoDeRegiao)}
+                        {renderDetalhe("Legendas", Array.isArray(dados.legendas) ? dados.legendas.join(', ') : dados.legendas)}
+                        {renderDetalhe("Duração (min)", dados.duracao)}
+                    </>
                 );
             default:
                 return null;
         }
     }
 
-    return (
+    if (isLoading) {
+        return (
+            <AuthenticatedLayout title="Detalhes da Mídia">
+                <div className="flex justify-center items-center py-20 text-brand-secondary">
+                    Carregando...
+                </div>
+            </AuthenticatedLayout>
+        );
+    }
 
-        <main>
-            {alert.show && (
-                <>
-                    <div
-                        className={`mx-6 mb-4 p-4 rounded border-l-4 flex items-center justify-between ${alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`}`}
-                        role="alert">
-                        <div className="flex items-center">
-                            {alert.tipo === 'sucesso' ? <span className="mr-3 text-lg font-bold">✓</span> :
-                                <span className="mr-3 text-lg font-bold">✕</span>}
-                            <span>{alert.message}</span>
+    if (!midiaResp) {
+        return (
+            <AuthenticatedLayout title="Detalhes da Mídia">
+                <div className="max-w-2xl">
+                    {alert.show && (
+                        <div className="mb-6">
+                            <Alert
+                                variant={alert.tipo === 'sucesso' ? 'success' : 'error'}
+                                message={alert.message}
+                                onClose={() => setAlert(prev => ({...prev, show: false}))}
+                            />
                         </div>
-                        <button type="button"
-                                className={`ml-4 text-lg font-bold hover:opacity-70 transition-opacity ${alert.tipo === 'sucesso' ? 'text-green-700' : 'text-red-700'}`}
-                                onClick={() => setAlert(prev => ({...prev, show: false}))} aria-label="Close">×
-                        </button>
-                    </div>
-                </>
+                    )}
+                    <Card className="shadow-premium">
+                        <CardContent>
+                            <p className="text-center text-brand-secondary py-6">Mídia não encontrada.</p>
+                        </CardContent>
+                        <CardFooter>
+                            <Link href="/midias">
+                                <Button variant="outline">Voltar à lista</Button>
+                            </Link>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </AuthenticatedLayout>
+        );
+    }
+
+    const midia: Midia = midiaResp as Midia;
+
+    return (
+        <AuthenticatedLayout title="Detalhes da Mídia" subtitle="Informações completas do acervo">
+            <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1 mb-4 text-sm text-brand-secondary hover:text-brand-text transition-colors"
+            >
+                ← Voltar
+            </button>
+
+            {alert.show && (
+                <div className="mb-6">
+                    <Alert
+                        variant={alert.tipo === 'sucesso' ? 'success' : 'error'}
+                        message={alert.message}
+                        onClose={() => setAlert(prev => ({...prev, show: false}))}
+                    />
+                </div>
             )}
 
-            <div className="grid  grid-cols-6 justify-center w-full mt-5">
-                <div className="bg-white rounded shadow mt-6 p-5 col-span-2 col-start-3">
-                    <h1 className="text-2xl font-bold mb-4">{midia.titulo}</h1>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Informações da mídia */}
+                <div className="lg:col-span-2">
+                    <Card className="shadow-premium">
+                        <CardHeader>
+                            <CardTitle>{midia.titulo}</CardTitle>
+                            <p className="text-brand-secondary mt-1 text-sm">
+                                {mediaTranslate[midia.tipo as TipoDeMidia]}
+                            </p>
+                        </CardHeader>
 
-                    <div className={"p-5"}>
+                        <CardContent>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+                                {renderDetalhe("Tipo", mediaTranslate[midia.tipo as TipoDeMidia])}
+                                {renderDetalhe("Data de Criação", formatDate(midia.dataCriacao))}
+                                {renderDadosEspecificos(midia)}
+                            </div>
+                        </CardContent>
 
-                        <div className={"mb-2"}><strong>Tipo:</strong> {mediaTranslate[midia.tipo as TipoDeMidia]}</div>
-
-                        <div><strong className={"mb-2"}>Data de Criação:</strong> {formatDate(midia.dataCriacao)}</div>
-
-                        <div className={"mb-2"}>
-                            {renderData()}
-                        </div>
-
-                        <div className={"flex items-center mt-4"}>
-                            <strong className={"mb-2 mr-3"}>
-                                Exemplares:
-                            </strong>
-                            <Link href={`/midias/${midia.id}/exemplares`} className="btn-edit">
-                                <button>
-                                    Lista de Exemplares
-                                </button>
+                        <CardFooter>
+                            <Link href="/midias">
+                                <Button variant="outline">Voltar</Button>
                             </Link>
-                        </div>
-                    </div>
+                            {isFuncionario && (
+                                <Link href={`/midias/${midia.id}/edit`}>
+                                    <Button variant="primary">Editar</Button>
+                                </Link>
+                            )}
+                        </CardFooter>
+                    </Card>
+                </div>
 
-                    <div className="mt-6 flex justify-around">
-                        <Link href="/midias" className="btn btn-delete">
-                            <button>
-                                Voltar
-                            </button>
-                        </Link>
-                        <Link href={`/midias/${midia.id}/edit`} className="btn-edit">
-                            <button>
-                                Editar
-                            </button>
-                        </Link>
-                    </div>
+                {/* Ações / exemplares */}
+                <div>
+                    <Card variant="secondary">
+                        <CardHeader>
+                            <CardTitle>
+                                <span className="text-xl">Exemplares</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-brand-text/70 mb-4">
+                                Veja todos os exemplares físicos desta mídia disponíveis no acervo.
+                            </p>
+                            <Link href={`/midias/${midia.id}/exemplares`}>
+                                <Button variant="primary" className="w-full">
+                                    Lista de Exemplares
+                                </Button>
+                            </Link>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
-        </main>
+        </AuthenticatedLayout>
     );
 }
-
-

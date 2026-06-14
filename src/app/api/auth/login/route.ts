@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { PunicaoService } from "@/services/punicaoService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,11 +34,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Reavalia punição por atraso e bloqueia o acesso de leitores banidos.
+    const estado = await new PunicaoService().avaliarLeitor(leitor.id);
+    if (estado === "BANIDO") {
+      return NextResponse.json(
+        {
+          sucesso: false,
+          erro: {
+            mensagem:
+              "Sua conta está bloqueada por atraso na devolução. Procure a biblioteca para regularizar.",
+          },
+        },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json({
       sucesso: true,
       dados: {
         token: `mock-token-${leitor.id}`,
-        usuario: { id: leitor.id, nome: leitor.nome, email: leitor.email, tipo },
+        usuario: { id: leitor.id, nome: leitor.nome, email: leitor.email, tipo, estado },
       },
     });
   } catch (erro) {

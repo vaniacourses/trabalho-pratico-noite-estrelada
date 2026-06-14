@@ -22,6 +22,13 @@ jest.mock("../../../utils/helpers", () => ({
         if (!date) return null;
         return new Date(date).toLocaleDateString("pt-BR");
     },
+    formatCpf: (value: string | null | undefined) => {
+        const d = (value ?? "").replace(/\D/g, "").slice(0, 11);
+        if (d.length <= 3) return d;
+        if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+        if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+        return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
+    },
 }));
 
 // Mock do Next.js Link

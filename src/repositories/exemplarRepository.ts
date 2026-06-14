@@ -25,6 +25,22 @@ export class ExemplarRepository {
         });
     }
 
+    async obterExemplarPorId(id: string): Promise<Exemplar | null> {
+        return prisma.exemplar.findUnique({
+            where: { id },
+        });
+    }
+
+    async atualizarExemplar(
+        id: string,
+        data: { codigo?: string; estado?: EstadoExemplar }
+    ): Promise<Exemplar> {
+        return prisma.exemplar.update({
+            where: { id },
+            data,
+        });
+    }
+
     async deletarExemplar(id: string): Promise<Exemplar> {
         return prisma.exemplar.delete({
             where: { id },

@@ -73,11 +73,11 @@
     }
 
     .btn-primary {
-        @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+        @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold border-2 border-transparent py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
     .btn-secondary {
-        @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+        @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold border-2 border-transparent py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
     .btn-outline {

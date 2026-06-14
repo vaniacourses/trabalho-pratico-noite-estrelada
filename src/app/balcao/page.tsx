@@ -134,6 +134,15 @@ export default function BalcaoPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [emprestimoRealizado, setEmprestimoRealizado] = useState<EmprestimoRealizado | null>(null);
 
+  // histórico real
+  const [historico, setHistorico] = useState<any[]>([]);
+  const [devolvendoId, setDevolvendoId] = useState<string | null>(null);
+  const [pagina, setPagina] = useState(0);
+  const [tamanhoPagina, setTamanhoPagina] = useState(3);
+  const [filtroAberto, setFiltroAberto] = useState(false);
+  const [filtroLeitor, setFiltroLeitor] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
+
   // auth
   useEffect(() => {
     try {
@@ -157,9 +166,39 @@ export default function BalcaoPage() {
     fetch("/api/midias").then(r => r.json()).then(d => { if (d.sucesso) setMidias(d.dados); }).catch(() => {});
   }
 
+  function carregarHistorico() {
+    fetch("/api/emprestimos?limite=50").then(r => r.json()).then(d => { if (d.sucesso) setHistorico(d.dados); }).catch(() => {});
+  }
+
+  async function handleDevolver(id: string) {
+    setDevolvendoId(id);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+    try {
+      const res = await fetch(`/api/emprestimos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "finalizar" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.sucesso) {
+        setErrorMessage(data.erro?.mensagem || "Não foi possível registrar a devolução.");
+        return;
+      }
+      setSuccessMessage("Devolução registrada com sucesso!");
+      carregarHistorico();
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch {
+      setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
+    } finally {
+      setDevolvendoId(null);
+    }
+  }
+
   useEffect(() => {
     fetch("/api/leitores").then(r => r.json()).then(d => { if (d.sucesso) setLeitores(d.dados); }).catch(() => {});
     carregarMidias();
+    carregarHistorico();
   }, []);
 
   // fechar dropdowns ao clicar fora
@@ -237,6 +276,7 @@ export default function BalcaoPage() {
       setEmprestimoRealizado(data.dados);
       setSuccessMessage(`Empréstimo de "${midiaSelecionada.titulo}" para ${leitorSelecionado.nome} realizado!`);
       carregarMidias();
+      carregarHistorico();
       limpar();
       setTimeout(() => { setSuccessMessage(null); setEmprestimoRealizado(null); }, 6000);
     } catch {
@@ -379,7 +419,7 @@ export default function BalcaoPage() {
         </div>
 
         {/* Painel lateral */}
-        <div>
+        <div className="flex flex-col justify-between h-full">
           {emprestimoRealizado ? (
             <Card className="shadow-premium border-l-4 border-brand-success">
               <CardHeader>
@@ -423,47 +463,197 @@ export default function BalcaoPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Card Acervo de Mídias */}
+          <Card className="shadow-premium">
+            <CardHeader>
+              <CardTitle>Acervo de Mídias</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-brand-secondary mb-5">
+                Gerencie o catálogo de livros, DVDs e CDs. Adicione novas mídias, exemplares e visualize o acervo completo.
+              </p>
+              <a href="/midias">
+                <Button variant="primary" className="w-full">
+                  Ir para Lista de Mídias
+                </Button>
+              </a>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
       {/* Solicitações Pendentes */}
       <PainelPendentes />
 
-      {/* Histórico mock */}
+      {/* Histórico */}
       <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle>Últimos Empréstimos do Sistema</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-brand-secondary/20">
-                    <th className="text-left py-2 px-4 text-brand-secondary font-semibold">ID Empréstimo</th>
-                    <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Leitor</th>
-                    <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Estado</th>
-                    <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Expiração</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { id: "emp123...abc1", leitor: "leitor1@example.com", expiracao: "14/06/2026" },
-                    { id: "emp223...abc2", leitor: "leitor2@example.com", expiracao: "15/06/2026" },
-                    { id: "emp323...abc3", leitor: "leitor3@example.com", expiracao: "16/06/2026" },
-                  ].map((row) => (
-                    <tr key={row.id} className="border-b border-brand-bg hover:bg-brand-bg/50 transition-colors">
-                      <td className="py-3 px-4 font-mono text-xs">{row.id}</td>
-                      <td className="py-3 px-4">{row.leitor}</td>
-                      <td className="py-3 px-4">
-                        <span className="inline-block bg-brand-primary/20 text-brand-primary px-3 py-1 rounded text-xs font-semibold">CORRENTE</span>
-                      </td>
-                      <td className="py-3 px-4">{row.expiracao}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex items-center justify-between">
+              <CardTitle>Últimos Empréstimos do Sistema</CardTitle>
+              <button
+                onClick={() => setFiltroAberto(v => !v)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border transition-colors ${
+                  filtroAberto || filtroEstado || filtroLeitor
+                    ? "bg-brand-primary text-white border-brand-primary"
+                    : "border-brand-secondary/30 text-brand-secondary hover:bg-brand-bg"
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                </svg>
+                Filtrar
+                {(filtroEstado || filtroLeitor) && <span className="ml-1 bg-white/30 rounded-full px-1.5">•</span>}
+              </button>
             </div>
+
+            {/* Painel de filtros */}
+            {filtroAberto && (
+              <div className="mt-4 p-4 bg-brand-bg rounded-lg flex flex-wrap gap-4 items-end">
+                <div className="flex-1 min-w-[160px]">
+                  <label className="block text-xs font-semibold text-brand-text mb-1">Leitor</label>
+                  <input
+                    type="text"
+                    value={filtroLeitor}
+                    onChange={e => { setFiltroLeitor(e.target.value); setPagina(0); }}
+                    placeholder="Nome do leitor..."
+                    className="w-full px-3 py-1.5 text-sm border border-brand-secondary/30 rounded bg-white text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  />
+                </div>
+                <div className="flex-1 min-w-[140px]">
+                  <label className="block text-xs font-semibold text-brand-text mb-1">Estado</label>
+                  <select
+                    value={filtroEstado}
+                    onChange={e => { setFiltroEstado(e.target.value); setPagina(0); }}
+                    className="w-full px-3 py-1.5 text-sm border border-brand-secondary/30 rounded bg-white text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  >
+                    <option value="">Todos</option>
+                    <option value="CORRENTE">Corrente</option>
+                    <option value="PENDENTE">Pendente</option>
+                    <option value="FINALIZADO">Finalizado</option>
+                    <option value="ATRASADO">Atrasado</option>
+                    <option value="REJEITADO">Rejeitado</option>
+                  </select>
+                </div>
+                <button
+                  onClick={() => { setFiltroLeitor(""); setFiltroEstado(""); setPagina(0); }}
+                  className="text-xs text-brand-secondary hover:text-brand-text underline pb-1"
+                >
+                  Limpar filtros
+                </button>
+              </div>
+            )}
+          </CardHeader>
+
+          <CardContent>
+            {(() => {
+              const estadoColors: Record<string, string> = {
+                CORRENTE: "bg-brand-primary/20 text-brand-primary",
+                PENDENTE: "bg-yellow-100 text-yellow-800",
+                FINALIZADO: "bg-gray-100 text-gray-600",
+                ATRASADO: "bg-orange-100 text-orange-800",
+                REJEITADO: "bg-red-100 text-red-700",
+              };
+
+              const filtrado = historico.filter(e => {
+                const matchLeitor = !filtroLeitor || (e.leitor?.nome ?? "").toLowerCase().includes(filtroLeitor.toLowerCase());
+                const matchEstado = !filtroEstado || e.estado === filtroEstado;
+                return matchLeitor && matchEstado;
+              });
+
+              const totalPaginas = Math.ceil(filtrado.length / tamanhoPagina);
+              const pagina_ = Math.min(pagina, Math.max(0, totalPaginas - 1));
+              const pagina_inicio = pagina_ * tamanhoPagina;
+              const paginado = filtrado.slice(pagina_inicio, pagina_inicio + tamanhoPagina);
+
+              return (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-brand-secondary/20">
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Leitor</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Mídia</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Cód. Exemplar</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Estado</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Expiração</th>
+                          <th className="text-right py-2 px-4 text-brand-secondary font-semibold">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginado.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="py-6 text-center text-sm text-brand-secondary/60">
+                              {filtrado.length === 0 && historico.length > 0 ? "Nenhum resultado para os filtros aplicados." : "Nenhum empréstimo registrado."}
+                            </td>
+                          </tr>
+                        ) : paginado.map((e) => (
+                          <tr key={e.id} className="border-b border-brand-bg hover:bg-brand-bg/50 transition-colors">
+                            <td className="py-3 px-4">{e.leitor?.nome ?? "—"}</td>
+                            <td className="py-3 px-4">{e.exemplar?.midia?.titulo ?? "—"}</td>
+                            <td className="py-3 px-4 font-mono text-xs">{e.exemplar?.codigo ?? "—"}</td>
+                            <td className="py-3 px-4">
+                              <span className={`inline-block px-3 py-1 rounded text-xs font-semibold ${estadoColors[e.estado] ?? "bg-gray-100 text-gray-600"}`}>
+                                {e.estado}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">{new Date(e.dataExpiracao).toLocaleDateString("pt-BR")}</td>
+                            <td className="py-3 px-4 text-right">
+                              {e.estado === "CORRENTE" && (
+                                <Button
+                                  variant="primary"
+                                  size="xs"
+                                  loading={devolvendoId === e.id}
+                                  disabled={devolvendoId !== null}
+                                  onClick={() => handleDevolver(e.id)}
+                                >
+                                  Devolver
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Rodapé: tamanho de página + paginação */}
+                  <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-2 text-xs text-brand-secondary">
+                      <span>Por página:</span>
+                      <select
+                        value={tamanhoPagina}
+                        onChange={e => { setTamanhoPagina(Number(e.target.value)); setPagina(0); }}
+                        className="px-2 py-1 border border-brand-secondary/30 rounded bg-white text-brand-text text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                      >
+                        <option value={3}>3</option>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-brand-secondary">
+                      <span>{filtrado.length === 0 ? "0" : pagina_inicio + 1}–{Math.min(pagina_inicio + tamanhoPagina, filtrado.length)} de {filtrado.length}</span>
+                      <button
+                        onClick={() => setPagina(p => Math.max(0, p - 1))}
+                        disabled={pagina_ === 0}
+                        className="px-2.5 py-1 rounded border border-brand-secondary/30 hover:bg-brand-bg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        onClick={() => setPagina(p => Math.min(totalPaginas - 1, p + 1))}
+                        disabled={pagina_ >= totalPaginas - 1}
+                        className="px-2.5 py-1 rounded border border-brand-secondary/30 hover:bg-brand-bg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
       </div>

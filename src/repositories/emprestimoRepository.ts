@@ -1,6 +1,5 @@
 import {prisma} from "@/lib/prisma";
 import type {Emprestimo, EstadoEmprestimo} from "@prisma/client";
-import {notificarLeitoresService} from "@/container/notificarLeitor.container.ts";
 
 /**
  * EmprestimoRepository
@@ -96,7 +95,7 @@ export class EmprestimoRepository {
     async finalizarEmprestimo(
         idEmprestimo: string
     ): Promise<Emprestimo> {
-        const resultadoDaFinalizacao = await prisma.$transaction(async (tx) => {
+        return prisma.$transaction(async (tx) => {
             // 1. Encontrar o empréstimo
             const emprestimo = await tx.emprestimo.findUnique({
                 where: {id: idEmprestimo},
@@ -116,24 +115,13 @@ export class EmprestimoRepository {
             });
 
             // 3. Atualizar o exemplar para DISPONÍVEL
-            const exemplarAtualizado = await tx.exemplar.update({
+            await tx.exemplar.update({
                 where: {id: emprestimo.idExemplar},
                 data: {estado: "DISPONIVEL"},
             });
 
-            return {emprestimoFinalizado, exemplarAtualizado};
+            return emprestimoFinalizado;
         });
-
-        const {emprestimoFinalizado, exemplarAtualizado} = resultadoDaFinalizacao;
-
-        // 4. Notificar os leitores sobre o exemplar disponivel
-        try {
-            await notificarLeitoresService.notificarLeitores(exemplarAtualizado);
-        } catch (error) {
-           throw new Error("Erro na notifição do exemplar");
-        }
-
-        return emprestimoFinalizado;
     }
 
     /**
@@ -219,6 +207,25 @@ export class EmprestimoRepository {
                 },
             },
             orderBy: {dataInicio: "asc"},
+        });
+    }
+
+    /**
+     * Lista os empréstimos mais recentes com dados do leitor
+     */
+    async listarRecentes(limite: number = 10) {
+        return prisma.emprestimo.findMany({
+            orderBy: { dataInicio: "desc" },
+            take: limite,
+            include: {
+                leitor: { select: { nome: true, email: true } },
+                exemplar: {
+                    select: {
+                        codigo: true,
+                        midia: { select: { titulo: true } },
+                    },
+                },
+            },
         });
     }
 
