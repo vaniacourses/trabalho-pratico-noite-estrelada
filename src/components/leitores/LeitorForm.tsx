@@ -6,6 +6,7 @@ import {Button} from "@/components/ui/Button.tsx";
 import {Leitor} from "@prisma/client";
 import Link from "next/link";
 import {CardFooter} from "@/components/ui/Card.tsx";
+import {formatCpf, normalizarCpf} from "@/utils/helpers";
 
 interface LeitorFormProps {
     initialData?: Leitor;
@@ -17,23 +18,8 @@ interface LeitorFormProps {
 
 export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backHref = "/leitores"}: LeitorFormProps) {
 
-    const formatCPF = (value: string) => {
-
-        const onlyNumbers = value.replace(/\D/g, "");
-
-        if (onlyNumbers.length <= 3) {
-            return onlyNumbers;
-        } else if (onlyNumbers.length <= 6) {
-            return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3)}`;
-        } else if (onlyNumbers.length <= 9) {
-            return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3, 6)}.${onlyNumbers.slice(6)}`;
-        } else {
-            return `${onlyNumbers.slice(0, 3)}.${onlyNumbers.slice(3, 6)}.${onlyNumbers.slice(6, 9)}-${onlyNumbers.slice(9, 11)}`;
-        }
-    };
-
     const [nome, setNome] = useState(initialData?.nome || "");
-    const [cpf, setCpf] = useState(formatCPF(initialData?.cpf ?? ""));
+    const [cpf, setCpf] = useState(formatCpf(initialData?.cpf ?? ""));
     const [dataDeNascimento, setDataDeNascimento] = useState(
         initialData?.dataDeNascimento ? new Date(initialData.dataDeNascimento).toISOString().split("T")[0] : ""
     );
@@ -43,8 +29,7 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backH
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const formatted = formatCPF(e.target.value);
-        setCpf(formatted);
+        setCpf(formatCpf(e.target.value));
     };
 
     const validateForm = () => {
@@ -62,7 +47,8 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backH
                 newErrors.senhaConfirm = "As senhas não coincidem";
             }
 
-            if (cpf.length !== 0 && cpf.length < 11) {
+            const cpfDigitos = normalizarCpf(cpf);
+            if (cpfDigitos.length !== 0 && cpfDigitos.length < 11) {
                 newErrors.cpf = "O cpf precisa estar no formato xxx.xxx.xxx-xx";
             }
         }
@@ -80,7 +66,7 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backH
 
         onSubmit({
             nome,
-            cpf: cpf.replace(/\D/g, ""),
+            cpf: normalizarCpf(cpf),
             dataDeNascimento: dataDeNascimento ? new Date(dataDeNascimento) : null,
             email,
             senha,

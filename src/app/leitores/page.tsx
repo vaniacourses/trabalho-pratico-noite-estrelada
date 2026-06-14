@@ -1,7 +1,7 @@
 "use client";
 
 import {Leitor} from "@prisma/client";
-import {formatDate} from "@/utils/helpers.ts";
+import {formatDate, formatCpf} from "@/utils/helpers.ts";
 import Link from "next/link";
 import {useState, useEffect} from "react";
 
@@ -169,7 +169,7 @@ export default function LeitoresPage() {
                                     <tr key={leitor.id}>
                                         <td className="p-5 text-center">{leitor.nome}</td>
                                         <td className="p-5 text-center">{leitor.email || "-"}</td>
-                                        <td className="p-5 text-center">{leitor.cpf || "-"}</td>
+                                        <td className="p-5 text-center">{leitor.cpf ? formatCpf(leitor.cpf) : "-"}</td>
                                         <td className="p-5 text-center">{leitor.dataDeNascimento ?
                                             formatDate(leitor.dataDeNascimento) : "-"}</td>
                                         <td className="p-5 text-center">{leitor.estado}</td>

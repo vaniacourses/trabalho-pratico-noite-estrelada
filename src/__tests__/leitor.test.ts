@@ -157,6 +157,18 @@ describe("LeitorService", () => {
             expect(resultado.estado).toBe("REGULAR");
         });
 
+        it("✅ deve normalizar o CPF removendo a pontuação ao criar", async () => {
+            const resultado = await service.criarLeitor({
+                nome: "Fernanda",
+                senha: "password999",
+                email: "fernanda@example.com",
+                cpf: "987.654.321-00",
+                dataDeNascimento: new Date("1992-03-10"),
+            });
+
+            expect(resultado.cpf).toBe("98765432100");
+        });
+
         it("✅ deve criar leitor com dados incompletos em estado INCOMPLETO", async () => {
             const resultado = await service.criarLeitor({
                 nome: "Bruno",
@@ -212,7 +224,8 @@ describe("LeitorService", () => {
 
             expect(resultado.nome).toBe("João");
             expect(resultado.email).toBe("novo-email@example.com");
-            expect(resultado.cpf).toBe("111.222.333-44");
+            // CPF é normalizado para apenas dígitos antes de persistir
+            expect(resultado.cpf).toBe("11122233344");
         });
 
         it("✅ deve atualizar usando camelCase dataDeNascimento", async () => {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { EmprestimoService } from "@/services/emprestimoService";
 import type { IErroAplicacao } from "@/types";
 
-// PATCH /api/emprestimos/:id  — body: { acao: "aprovar" | "rejeitar" }
+// PATCH /api/emprestimos/:id  — body: { acao: "aprovar" | "rejeitar" | "finalizar" }
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -17,18 +17,22 @@ export async function PATCH(
         { status: 400 }
       );
     }
-    if (acao !== "aprovar" && acao !== "rejeitar") {
+    if (acao !== "aprovar" && acao !== "rejeitar" && acao !== "finalizar") {
       return NextResponse.json(
-        { sucesso: false, erro: { codigo: "VALIDACAO_ERRO", mensagem: "Ação deve ser 'aprovar' ou 'rejeitar'" } },
+        { sucesso: false, erro: { codigo: "VALIDACAO_ERRO", mensagem: "Ação deve ser 'aprovar', 'rejeitar' ou 'finalizar'" } },
         { status: 400 }
       );
     }
 
     const service = new EmprestimoService();
-    const resultado =
-      acao === "aprovar"
-        ? await service.aprovarEmprestimo(id)
-        : await service.rejeitarEmprestimo(id);
+    let resultado;
+    if (acao === "aprovar") {
+      resultado = await service.aprovarEmprestimo(id);
+    } else if (acao === "rejeitar") {
+      resultado = await service.rejeitarEmprestimo(id);
+    } else {
+      resultado = await service.finalizarEmprestimo(id);
+    }
 
     return NextResponse.json({ sucesso: true, dados: resultado });
   } catch (erro: any) {

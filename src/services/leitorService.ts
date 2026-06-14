@@ -1,6 +1,7 @@
 import {LeitorRepository} from "@/repositories/leitorRepository";
 import {EstadoLeitor, Leitor} from "@prisma/client";
 import type {IErroAplicacao, ILeitorDTO, ILeitorResponse} from "@/types";
+import {normalizarCpf} from "@/utils/helpers";
 
 export class LeitorService {
     private repository: LeitorRepository;
@@ -33,7 +34,7 @@ export class LeitorService {
         const nome = dto.nome?.trim() || dto.nome;
         const senha = dto.senha?.trim() || dto.senha;
         const email = dto.email?.trim() || undefined;
-        const cpf = dto.cpf?.trim() || undefined;
+        const cpf = normalizarCpf(dto.cpf) || undefined;
         const dataDeNascimento = dto.dataDeNascimento ?? undefined;
 
         // respect explicit estado if provided, otherwise evaluate from provided data
@@ -58,9 +59,12 @@ export class LeitorService {
             const {
                 nome,
                 email,
-                cpf,
                 dataDeNascimento,
             } = data
+
+            // Normaliza o CPF (somente dígitos) antes de avaliar estado e persistir
+            const cpf = data.cpf !== undefined ? (normalizarCpf(data.cpf) || null) : data.cpf;
+            data.cpf = cpf ?? undefined;
 
             data.estado = this.avaliarEstadoDoLeitor([nome, email, cpf, dataDeNascimento])
 

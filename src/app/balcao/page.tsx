@@ -136,6 +136,7 @@ export default function BalcaoPage() {
 
   // histórico real
   const [historico, setHistorico] = useState<any[]>([]);
+  const [devolvendoId, setDevolvendoId] = useState<string | null>(null);
   const [pagina, setPagina] = useState(0);
   const [tamanhoPagina, setTamanhoPagina] = useState(3);
   const [filtroAberto, setFiltroAberto] = useState(false);
@@ -167,6 +168,31 @@ export default function BalcaoPage() {
 
   function carregarHistorico() {
     fetch("/api/emprestimos?limite=50").then(r => r.json()).then(d => { if (d.sucesso) setHistorico(d.dados); }).catch(() => {});
+  }
+
+  async function handleDevolver(id: string) {
+    setDevolvendoId(id);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+    try {
+      const res = await fetch(`/api/emprestimos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "finalizar" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.sucesso) {
+        setErrorMessage(data.erro?.mensagem || "Não foi possível registrar a devolução.");
+        return;
+      }
+      setSuccessMessage("Devolução registrada com sucesso!");
+      carregarHistorico();
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch {
+      setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
+    } finally {
+      setDevolvendoId(null);
+    }
   }
 
   useEffect(() => {
@@ -547,29 +573,45 @@ export default function BalcaoPage() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-brand-secondary/20">
-                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">ID Empréstimo</th>
                           <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Leitor</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Mídia</th>
+                          <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Cód. Exemplar</th>
                           <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Estado</th>
                           <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Expiração</th>
+                          <th className="text-right py-2 px-4 text-brand-secondary font-semibold">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
                         {paginado.length === 0 ? (
                           <tr>
-                            <td colSpan={4} className="py-6 text-center text-sm text-brand-secondary/60">
+                            <td colSpan={6} className="py-6 text-center text-sm text-brand-secondary/60">
                               {filtrado.length === 0 && historico.length > 0 ? "Nenhum resultado para os filtros aplicados." : "Nenhum empréstimo registrado."}
                             </td>
                           </tr>
                         ) : paginado.map((e) => (
                           <tr key={e.id} className="border-b border-brand-bg hover:bg-brand-bg/50 transition-colors">
-                            <td className="py-3 px-4 font-mono text-xs">{e.id.slice(0, 12)}...</td>
                             <td className="py-3 px-4">{e.leitor?.nome ?? "—"}</td>
+                            <td className="py-3 px-4">{e.exemplar?.midia?.titulo ?? "—"}</td>
+                            <td className="py-3 px-4 font-mono text-xs">{e.exemplar?.codigo ?? "—"}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-block px-3 py-1 rounded text-xs font-semibold ${estadoColors[e.estado] ?? "bg-gray-100 text-gray-600"}`}>
                                 {e.estado}
                               </span>
                             </td>
                             <td className="py-3 px-4">{new Date(e.dataExpiracao).toLocaleDateString("pt-BR")}</td>
+                            <td className="py-3 px-4 text-right">
+                              {e.estado === "CORRENTE" && (
+                                <Button
+                                  variant="primary"
+                                  size="xs"
+                                  loading={devolvendoId === e.id}
+                                  disabled={devolvendoId !== null}
+                                  onClick={() => handleDevolver(e.id)}
+                                >
+                                  Devolver
+                                </Button>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
