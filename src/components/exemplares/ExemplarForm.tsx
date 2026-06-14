@@ -55,7 +55,7 @@ export function ExemplarForm({idMidia, onSubmit, isSubmitting}: ExemplarFormProp
                     type="text"
                     value={codigo}
                     onChange={(e: any) => setCodigo(e.target.value)}
-                    placeholder="Ex: LIVRO-2024-001, CD-2024-001"
+                    placeholder="Ex: LIVRO-2024-001, CD-001..."
                 />
                 {errors.codigo && <p className="text-red-500 text-sm mt-1">{errors.codigo}</p>}
             </div>
