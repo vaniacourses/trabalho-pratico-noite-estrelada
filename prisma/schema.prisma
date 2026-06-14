@@ -83,6 +83,7 @@ model Leitor {
 
 model Funcionario {
   usuarioId String  @id
+  matricula String
   usuario   Usuario @relation(fields: [usuarioId], references: [id])
 
   @@map("funcionarios")
