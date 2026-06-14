@@ -45,7 +45,7 @@ export const AuthenticatedLayout: React.FC<LayoutProps> = ({
   subtitle,
 }) => {
   return (
-    <div className="min-h-screen bg-brand-bg">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-soft sticky top-0 z-50">
         <div className="container-premium py-4">
@@ -72,7 +72,7 @@ export const AuthenticatedLayout: React.FC<LayoutProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="container-premium py-8">
+      <main className="container-premium py-8 flex-1">
         {title && (
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-brand-text">{title}</h2>
