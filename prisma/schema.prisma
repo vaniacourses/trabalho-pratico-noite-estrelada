@@ -62,9 +62,10 @@ model Usuario {
   tipo             TipoUsuario  @default(LEITOR)
   leitor           Leitor?
   funcionario      Funcionario?
+
+  @@map("usuarios")
 }
 
-// Models
 model Leitor {
   usuarioId       String       @id
   tipo            TipoUsuario  @default(LEITOR)
