@@ -219,6 +219,12 @@ export class EmprestimoRepository {
             take: limite,
             include: {
                 leitor: { select: { nome: true, email: true } },
+                exemplar: {
+                    select: {
+                        codigo: true,
+                        midia: { select: { titulo: true } },
+                    },
+                },
             },
         });
     }
