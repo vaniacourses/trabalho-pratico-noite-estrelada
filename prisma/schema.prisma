@@ -52,7 +52,7 @@ enum TipoUsuario {
 }
 
 // Models
-model Leitor {
+model Usuario {
   id               String       @id @default(cuid())
   nome             String
   cpf              String?      @unique
@@ -60,14 +60,31 @@ model Leitor {
   email            String?
   senha            String
   tipo             TipoUsuario  @default(LEITOR)
-  estado           EstadoLeitor @default(INCOMPLETO)
-  dataCriacao      DateTime     @default(now())
-  dataAtualizacao  DateTime     @updatedAt
+  leitor           Leitor?
+  funcionario      Funcionario?
+}
+
+// Models
+model Leitor {
+  usuarioId       String       @id
+  tipo            TipoUsuario  @default(LEITOR)
+  estado          EstadoLeitor @default(INCOMPLETO)
+  dataCriacao     DateTime     @default(now())
+  dataAtualizacao DateTime     @updatedAt
 
   emprestimos Emprestimo[]
   reservas    Reserva[]
 
-  @@map("usuarios")
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@map("leitores")
+}
+
+model Funcionario {
+  usuarioId String  @id
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@map("funcionarios")
 }
 
 model Midia {
@@ -109,7 +126,7 @@ model Emprestimo {
   dataCriacao     DateTime         @default(now())
   dataAtualizacao DateTime         @updatedAt
 
-  leitor   Leitor   @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  leitor   Leitor   @relation(fields: [idLeitor], references: [usuarioId], onDelete: Cascade)
   exemplar Exemplar @relation(fields: [idExemplar], references: [id], onDelete: Cascade)
 
   @@index([idLeitor])
@@ -126,7 +143,7 @@ model Reserva {
   dataCriacao     DateTime      @default(now())
   dataAtualizacao DateTime      @updatedAt
 
-  leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  leitor Leitor @relation(fields: [idLeitor], references: [usuarioId], onDelete: Cascade)
   midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
 
   @@index([idLeitor])
