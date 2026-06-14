@@ -45,6 +45,12 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backH
                 newErrors.senha = "Senha é obrigatória";
             } else if (senha !== senhaConfirm) {
                 newErrors.senhaConfirm = "As senhas não coincidem";
+            } else if (senha.length < 6) {
+                newErrors.senha = "A senha precisa de pelo menos 6 caracteres";
+            }
+
+            if(!email.trim()){
+                newErrors.email = "Email é obrigatório";
             }
 
             const cpfDigitos = normalizarCpf(cpf);
@@ -142,13 +148,14 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backH
             </div>
             <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-brand-text mb-2">
-                    Email
+                    Email *
                 </label>
                 <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    error={errors.email}
                 />
             </div>
 
