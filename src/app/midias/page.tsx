@@ -16,12 +16,25 @@ interface AlertState {
     tipo: 'sucesso' | 'erro';
 }
 
+const TIPOS_FUNCIONARIO = ["ATENDENTE", "GERENTE"];
+
 export default function MidiasPage() {
     const router = useRouter();
     const [midias, setMidias] = useState<Midia[]>([]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
     const [isLoading, setIsLoading] = useState(true);
+    const [isFuncionario, setIsFuncionario] = useState(false);
+
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem("usuario");
+            if (raw) {
+                const usuario = JSON.parse(raw);
+                setIsFuncionario(TIPOS_FUNCIONARIO.includes(usuario.tipo));
+            }
+        } catch {}
+    }, []);
 
     useEffect(() => {
         fetchMidias();
@@ -110,11 +123,13 @@ export default function MidiasPage() {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle>Mídias Cadastradas</CardTitle>
-                        <Link href="/midias/create">
-                            <button className="btn-primary text-sm py-2 px-5 rounded font-semibold shadow-soft transition-colors duration-200">
-                                + Adicionar Mídia
-                            </button>
-                        </Link>
+                        {isFuncionario && (
+                            <Link href="/midias/create">
+                                <button className="btn-primary text-sm py-2 px-5 rounded font-semibold shadow-soft transition-colors duration-200">
+                                    + Adicionar Mídia
+                                </button>
+                            </Link>
+                        )}
                     </div>
                 </CardHeader>
 
@@ -152,18 +167,22 @@ export default function MidiasPage() {
                                                         Visualizar
                                                     </button>
                                                 </Link>
-                                                <Link href={`/midias/${midia.id}/exemplares/create`}>
-                                                    <button className="px-3 py-1.5 bg-brand-primary text-white text-xs font-semibold rounded hover:bg-brand-primary-dark transition-colors">
-                                                        + Exemplar
-                                                    </button>
-                                                </Link>
-                                                <button
-                                                    className="px-3 py-1.5 bg-brand-error text-white text-xs font-semibold rounded hover:opacity-90 transition-colors disabled:opacity-50"
-                                                    onClick={() => handleExcluir(midia.id)}
-                                                    disabled={loadingId === midia.id}
-                                                >
-                                                    {loadingId === midia.id ? '...' : 'Excluir'}
-                                                </button>
+                                                {isFuncionario && (
+                                                    <>
+                                                        <Link href={`/midias/${midia.id}/exemplares/create`}>
+                                                            <button className="px-3 py-1.5 bg-brand-primary text-white text-xs font-semibold rounded hover:bg-brand-primary-dark transition-colors">
+                                                                + Exemplar
+                                                            </button>
+                                                        </Link>
+                                                        <button
+                                                            className="px-3 py-1.5 bg-brand-error text-white text-xs font-semibold rounded hover:opacity-90 transition-colors disabled:opacity-50"
+                                                            onClick={() => handleExcluir(midia.id)}
+                                                            disabled={loadingId === midia.id}
+                                                        >
+                                                            {loadingId === midia.id ? '...' : 'Excluir'}
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

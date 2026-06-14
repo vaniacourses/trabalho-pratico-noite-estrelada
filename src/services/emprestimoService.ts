@@ -165,6 +165,13 @@ export class EmprestimoService {
     }
 
     /**
+     * Lista os empréstimos mais recentes
+     */
+    async listarRecentes(limite: number = 10) {
+        return this.repository.listarRecentes(limite);
+    }
+
+    /**
      * Obtém um empréstimo por ID sem alterá-lo
      */
     async obterEmprestimoPorId(idEmprestimo: string): Promise<IEmprestimoResponse> {

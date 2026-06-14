@@ -46,6 +46,23 @@ class MockEmprestimoRepository extends EmprestimoRepository {
       dataAtualizacao: new Date(),
     };
   }
+
+  async listarRecentes(limite: number = 10): Promise<any[]> {
+    // Simular 12 empréstimos ordenados do mais recente para o mais antigo
+    const todos = Array.from({ length: 12 }, (_, i) => ({
+      id: `emprestimo-${i + 1}`,
+      idLeitor: "leitor-valido",
+      idExemplar: "exemplar-disponivel",
+      dataInicio: new Date(2026, 0, 12 - i),
+      dataExpiracao: new Date(2026, 0, 26 - i),
+      dataFinalizacao: null,
+      estado: "CORRENTE" as EstadoEmprestimo,
+      dataCriacao: new Date(),
+      dataAtualizacao: new Date(),
+      leitor: { nome: "Leitor Teste", email: "leitor@teste.com" },
+    }));
+    return todos.slice(0, limite);
+  }
 }
 
 describe("EmprestimoService", () => {
@@ -95,6 +112,25 @@ describe("EmprestimoService", () => {
           idExemplar: "exemplar-disponivel",
         })
       ).rejects.toThrow("LIMITE_EMPRESTIMOS_ATINGIDO");
+    });
+  });
+
+  describe("listarRecentes", () => {
+    it("✅ deve retornar empréstimos recentes respeitando o limite informado", async () => {
+      const resultado = await service.listarRecentes(3);
+
+      expect(resultado.length).toBe(3);
+      expect(resultado[0].id).toBe("emprestimo-1");
+    });
+
+    it("✅ deve usar limite padrão de 10 quando não informado", async () => {
+      const resultado = await service.listarRecentes();
+      expect(resultado.length).toBe(10);
+    });
+
+    it("✅ deve incluir os dados do leitor em cada empréstimo", async () => {
+      const resultado = await service.listarRecentes(1);
+      expect(resultado[0].leitor).toMatchObject({ nome: expect.any(String) });
     });
   });
 

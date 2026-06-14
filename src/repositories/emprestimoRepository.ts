@@ -211,6 +211,19 @@ export class EmprestimoRepository {
     }
 
     /**
+     * Lista os empréstimos mais recentes com dados do leitor
+     */
+    async listarRecentes(limite: number = 10) {
+        return prisma.emprestimo.findMany({
+            orderBy: { dataInicio: "desc" },
+            take: limite,
+            include: {
+                leitor: { select: { nome: true, email: true } },
+            },
+        });
+    }
+
+    /**
      * Obtém um empréstimo por ID com seus relacionamentos
      */
     async obterEmprestimoPorId(idEmprestimo: string) {

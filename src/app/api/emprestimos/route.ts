@@ -93,20 +93,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
+    const emprestimoService = new EmprestimoService();
 
     if (!id) {
-      return NextResponse.json(
-        {
-          erro: {
-            codigo: "VALIDACAO_ERRO",
-            mensagem: "O parâmetro 'id' é obrigatório",
-          },
-        },
-        { status: 400 }
-      );
+      const limite = parseInt(searchParams.get("limite") ?? "10", 10);
+      const emprestimos = await emprestimoService.listarRecentes(limite);
+      return NextResponse.json({ sucesso: true, dados: emprestimos }, { status: 200 });
     }
 
-    const emprestimoService = new EmprestimoService();
     const emprestimo = await emprestimoService.obterEmprestimoPorId(id);
 
     return NextResponse.json(

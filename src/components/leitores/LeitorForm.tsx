@@ -12,9 +12,10 @@ interface LeitorFormProps {
     formMode: "create" | "edit";
     onSubmit: (data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">) => void;
     isSubmitting: boolean;
+    backHref?: string;
 }
 
-export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: LeitorFormProps) {
+export function LeitorForm({initialData, formMode, onSubmit, isSubmitting, backHref = "/leitores"}: LeitorFormProps) {
 
     const formatCPF = (value: string) => {
 
@@ -87,9 +88,9 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-                <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="nome" className="block text-sm font-semibold text-brand-text mb-2">
                     Nome *
                 </label>
                 <Input
@@ -97,37 +98,39 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
+                    error={errors.nome}
                 />
-                {errors.nome && <p className="text-red-500 text-sm mt-1">{errors.nome}</p>}
             </div>
             {formMode === "create" && (
                 <>
                     <div>
-                        <label htmlFor="senha" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="senha" className="block text-sm font-semibold text-brand-text mb-2">
                             Senha *
                         </label>
                         <Input
                             id="senha"
                             type="password"
                             value={senha}
-                            onChange={(e) => setSenha(e.target.value)}/>
-                        {errors.senha && <p className="text-red-500 text-sm mt-1">{errors.senha}</p>}
+                            onChange={(e) => setSenha(e.target.value)}
+                            error={errors.senha}
+                        />
                     </div>
                     <div>
-                        <label htmlFor="senhaConfirm" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="senhaConfirm" className="block text-sm font-semibold text-brand-text mb-2">
                             Confirmar Senha *
                         </label>
                         <Input
                             id="senhaConfirm"
                             type="password"
                             value={senhaConfirm}
-                            onChange={(e) => setSenhaConfirm(e.target.value)}/>
-                        {errors.senhaConfirm && <p className="text-red-500 text-sm mt-1">{errors.senhaConfirm}</p>}
+                            onChange={(e) => setSenhaConfirm(e.target.value)}
+                            error={errors.senhaConfirm}
+                        />
                     </div>
                 </>
             )}
             <div>
-                <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="cpf" className="block text-sm font-semibold text-brand-text mb-2">
                     CPF
                 </label>
                 <Input
@@ -137,11 +140,11 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
                     onChange={handleCPFChange}
                     maxLength={14}
                     placeholder="000.000.000-00"
+                    error={errors.cpf}
                 />
-                {errors.cpf && <p className="text-red-500 text-sm mt-1">{errors.cpf}</p>}
             </div>
             <div>
-                <label htmlFor="dataDeNascimento" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="dataDeNascimento" className="block text-sm font-semibold text-brand-text mb-2">
                     Data de Nascimento
                 </label>
                 <Input
@@ -152,7 +155,7 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
                 />
             </div>
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-semibold text-brand-text mb-2">
                     Email
                 </label>
                 <Input
@@ -162,14 +165,14 @@ export function LeitorForm({initialData, formMode, onSubmit, isSubmitting}: Leit
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
-            <div className={"flex justify-around mx-auto"}>
-                <Button type="submit" disabled={isSubmitting} className={"btn btn-edit mt-3 w-3/4"}>
-                    {isSubmitting ? "Salvando..." : "Salvar"}
-                </Button>
-            </div>
+
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full">
+                {isSubmitting ? "Salvando..." : "Salvar"}
+            </Button>
+
             <CardFooter>
-                <Link href={"/leitores"} className={"btn btn-delete ml-2"}>
-                    {"Voltar"}
+                <Link href={backHref}>
+                    <Button type="button" variant="outline">Voltar</Button>
                 </Link>
             </CardFooter>
         </form>
