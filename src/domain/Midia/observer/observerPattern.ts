@@ -1,17 +1,20 @@
-import {EstadoReserva, Reserva} from "@prisma/client";
+import {Reserva} from "@prisma/client";
 
 export interface Observer {
     update(): void;
+
+    update(val1: any, val2: any): void;
 }
 
 export class reservaObserver implements Observer {
     constructor(private reserva: Reserva) {
     }
 
-    update() {
+    update(idLeitor?: string, index?: number) {
+        console.log(`O leitor ${idLeitor} está na posição ${index} da lista de espera para este exemplar.`);
     }
 
-    getId(){
+    getId() {
         return this.reserva.id;
     }
 
@@ -19,8 +22,8 @@ export class reservaObserver implements Observer {
         return this.reserva.dataCriacao.getTime();
     }
 
-    setEstado(estado: EstadoReserva) {
-        this.reserva.estado = estado;
+    getIdLeitor() {
+        return this.reserva.idLeitor;
     }
 }
 
