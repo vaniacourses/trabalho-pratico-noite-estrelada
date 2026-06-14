@@ -5,7 +5,7 @@ import {
     CdValidationStrategy,
     DvdValidationStrategy,
     PublicacaoValidationStrategy
-} from "@/domain/Midia/MidiaValidationStrategy.ts";
+} from "@/domain/Midia/strategy/MidiaValidationStrategy.ts";
 
 export class MidiaService {
     private repository: MidiaRespository;
