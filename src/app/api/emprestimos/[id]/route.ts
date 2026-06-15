@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { EmprestimoService } from "@/services/emprestimoService";
+import { bibliotecaFacade } from "@/container/biblioteca.container";
 import type { IErroAplicacao } from "@/types";
 
 // PATCH /api/emprestimos/:id  — body: { acao: "aprovar" | "rejeitar" | "finalizar" }
@@ -24,14 +24,13 @@ export async function PATCH(
       );
     }
 
-    const service = new EmprestimoService();
     let resultado;
     if (acao === "aprovar") {
-      resultado = await service.aprovarEmprestimo(id);
+      resultado = await bibliotecaFacade.aprovarEmprestimo(id);
     } else if (acao === "rejeitar") {
-      resultado = await service.rejeitarEmprestimo(id);
+      resultado = await bibliotecaFacade.rejeitarEmprestimo(id);
     } else {
-      resultado = await service.finalizarEmprestimo(id);
+      resultado = await bibliotecaFacade.finalizarEmprestimo(id);
     }
 
     return NextResponse.json({ sucesso: true, dados: resultado });

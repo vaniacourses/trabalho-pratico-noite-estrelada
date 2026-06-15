@@ -1,3 +1,4 @@
-import {NotificarLeitoresService} from "@/services/notificarLeitoresService.ts";
+import {NotificarLeitoresServiceComObserver} from "@/services/notificarLeitoresServiceComObserver.ts";
 
-export const notificarLeitoresService = new NotificarLeitoresService();
+// Instância única do Subject (padrão Observer) usada pelo fluxo de devolução.
+export const notificarLeitoresService = new NotificarLeitoresServiceComObserver();

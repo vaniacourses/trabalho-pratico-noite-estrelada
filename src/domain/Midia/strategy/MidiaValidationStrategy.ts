@@ -1,6 +1,6 @@
 import {ICdDTO, IDvdDTO, IMidiaDTO, IPublicacaoDTO} from "@/types";
 
-interface MidiaValidationStrategy {
+export interface MidiaValidationStrategy {
     validar(midia: IMidiaDTO): { erros: Record<string, string> };
 }
 

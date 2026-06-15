@@ -1,17 +1,33 @@
 import {Reserva} from "@prisma/client";
 
+/**
+ * Observer (GoF - Comportamental)
+ *
+ * Quando um exemplar fica disponível, os leitores que reservaram a mídia (os
+ * observers) são notificados de sua posição na lista de espera. O serviço de
+ * notificação atua como Subject, mantendo e percorrendo a lista de observers.
+ */
 export interface Observer {
-    update(): void;
-
-    update(val1: any, val2: any): void;
+    /** Notifica o observer de sua posição (index) na lista de espera. */
+    update(posicao: number): void;
 }
 
-export class reservaObserver implements Observer {
+export interface Subject {
+    attach(observer: Observer): void;
+
+    detach(observer: Observer): void;
+
+    notify(): Promise<void> | void;
+}
+
+export class ReservaObserver implements Observer {
     constructor(private reserva: Reserva) {
     }
 
-    update(idLeitor?: string, index?: number) {
-        console.log(`O leitor ${idLeitor} está na posição ${index} da lista de espera para este exemplar.`);
+    update(posicao: number): void {
+        console.log(
+            `O leitor ${this.reserva.idLeitor} está na posição ${posicao} da lista de espera para esta mídia.`
+        );
     }
 
     getId() {
@@ -26,12 +42,3 @@ export class reservaObserver implements Observer {
         return this.reserva.idLeitor;
     }
 }
-
-export interface Subject {
-    attach(observer: Observer): void;
-
-    detach(observer: Observer): void;
-
-    notify(observer: Observer): void;
-}
-
