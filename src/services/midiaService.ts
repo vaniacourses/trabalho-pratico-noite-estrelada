@@ -1,11 +1,7 @@
 import {MidiaRespository} from "@/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/types";
 import {Midia, TipoDeMidia} from "@prisma/client";
-import {
-    CdValidationStrategy,
-    DvdValidationStrategy,
-    PublicacaoValidationStrategy
-} from "@/domain/Midia/strategy/MidiaValidationStrategy.ts";
+import {MidiaValidationStrategyFactory} from "@/domain/Midia/strategy/MidiaValidationStrategyFactory.ts";
 
 export class MidiaService {
     private repository: MidiaRespository;
@@ -20,7 +16,7 @@ export class MidiaService {
 
     async criarMidia(dto: IMidiaDTO): Promise<IMidiaResponse> {
 
-        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+        const strategy = MidiaValidationStrategyFactory.criar(dto.tipo as TipoDeMidia);
 
         const { erros } = strategy.validar(dto);
 
@@ -39,7 +35,7 @@ export class MidiaService {
 
     async atualizarMidia(id: string, dto: IMidiaDTO): Promise<Midia> {
 
-        const strategy = this.detectarStrategy[dto.tipo as TipoDeMidia];
+        const strategy = MidiaValidationStrategyFactory.criar(dto.tipo as TipoDeMidia);
 
         const { erros } = strategy.validar(dto);
 
@@ -90,12 +86,6 @@ export class MidiaService {
 
         return midia;
     }
-
-    private detectarStrategy = {
-        [TipoDeMidia.CD]: new CdValidationStrategy(),
-        [TipoDeMidia.DVD]: new DvdValidationStrategy(),
-        [TipoDeMidia.PUBLICACAO]: new PublicacaoValidationStrategy()
-    } as const
 
     private mapearParaResponse(midia: any): IMidiaResponse {
         return {

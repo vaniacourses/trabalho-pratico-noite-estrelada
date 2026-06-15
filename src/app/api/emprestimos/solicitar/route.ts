@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { EmprestimoService } from "@/services/emprestimoService";
-import { PunicaoService } from "@/services/punicaoService";
+import { bibliotecaFacade } from "@/container/biblioteca.container";
 import type { IErroAplicacao } from "@/types";
 
 export async function POST(request: NextRequest) {
@@ -15,26 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Bloquear leitores em punição/banidos por atraso
-    const estado = await new PunicaoService().avaliarLeitor(idLeitor);
-    if (estado === "BANIDO" || estado === "EM_PUNICAO") {
-      return NextResponse.json(
-        {
-          sucesso: false,
-          erro: {
-            codigo: estado === "BANIDO" ? "LEITOR_BANIDO" : "LEITOR_EM_PUNICAO",
-            mensagem:
-              estado === "BANIDO"
-                ? "Conta bloqueada por atraso na devolução. Não é possível solicitar empréstimos."
-                : "Você está em punição por atraso. Regularize a devolução antes de solicitar outro empréstimo.",
-          },
-        },
-        { status: 403 }
-      );
-    }
-
-    const service = new EmprestimoService();
-    const solicitacao = await service.solicitarEmprestimo({ idLeitor, idExemplar, diasEmprestimo });
+    // A fachada cuida da punição, da regra de bloqueio por estado e da criação.
+    const solicitacao = await bibliotecaFacade.solicitarEmprestimo({ idLeitor, idExemplar, diasEmprestimo });
 
     return NextResponse.json({ sucesso: true, dados: solicitacao }, { status: 201 });
   } catch (erro: any) {

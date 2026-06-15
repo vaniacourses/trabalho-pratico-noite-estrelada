@@ -1,5 +1,6 @@
 import {prisma} from "@/lib/prisma";
 import type {Emprestimo, EstadoEmprestimo} from "@prisma/client";
+import {estadoDoLeitor} from "@/domain/leitor/state/LeitorState";
 
 /**
  * EmprestimoRepository
@@ -40,8 +41,8 @@ export class EmprestimoRepository {
             return false;
         }
 
-        // Leitor em estado REGULAR pode fazer empréstimos
-        return leitor.estado === "REGULAR" || leitor.estado === "INCOMPLETO";
+        // O próprio estado do leitor decide se ele pode emprestar (padrão State).
+        return estadoDoLeitor(leitor.estado).podeSolicitarEmprestimo();
     }
 
     /**
