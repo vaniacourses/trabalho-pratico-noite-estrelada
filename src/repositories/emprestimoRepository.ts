@@ -148,6 +148,8 @@ export class EmprestimoRepository {
         estado?: string;
         dataInicioDe?: Date;
         dataInicioAte?: Date;
+        leitorNome?: string;
+        midiaTitulo?: string;
     }) {
         const where: any = {};
 
@@ -164,6 +166,26 @@ export class EmprestimoRepository {
             if (filters.dataInicioAte) {
                 where.dataInicio.lte = filters.dataInicioAte;
             }
+        }
+
+        if (filters?.leitorNome) {
+            where.leitor = {
+                nome: {
+                    contains: filters.leitorNome,
+                    mode: "insensitive",
+                },
+            };
+        }
+
+        if (filters?.midiaTitulo) {
+            where.exemplar = {
+                midia: {
+                    titulo: {
+                        contains: filters.midiaTitulo,
+                        mode: "insensitive",
+                    },
+                },
+            };
         }
 
         return prisma.emprestimo.findMany({

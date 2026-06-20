@@ -50,12 +50,44 @@ export default function EmprestimosPage() {
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
     const [dataInicioDe, setDataInicioDe] = useState<string>("");
     const [dataInicioAte, setDataInicioAte] = useState<string>("");
+    const [leitorFiltro, setLeitorFiltro] = useState<string>("");
+    const [midiaFiltro, setMidiaFiltro] = useState<string>("");
+    const [leitoresOptions, setLeitoresOptions] = useState<Leitor[]>([]);
+    const [midiasOptions, setMidiasOptions] = useState<Midia[]>([]);
 
     useEffect(() => {
         fetchEmprestimos();
+        fetchSugestoes();
     }, []);
 
-    const fetchEmprestimos = async (filtroEstado = estadoFiltro, filtroDataDe = dataInicioDe, filtroDataAte = dataInicioAte) => {
+    const fetchSugestoes = async () => {
+        try {
+            const [leitoresResponse, midiasResponse] = await Promise.all([
+                fetch('/api/leitores'),
+                fetch('/api/midias'),
+            ]);
+
+            if (leitoresResponse.ok) {
+                const leitoresData = await leitoresResponse.json();
+                setLeitoresOptions(leitoresData.dados || []);
+            }
+
+            if (midiasResponse.ok) {
+                const midiasData = await midiasResponse.json();
+                setMidiasOptions(midiasData.dados || []);
+            }
+        } catch (erro) {
+            console.error('Erro ao carregar sugestões:', erro);
+        }
+    };
+
+    const fetchEmprestimos = async (
+        filtroEstado = estadoFiltro,
+        filtroDataDe = dataInicioDe,
+        filtroDataAte = dataInicioAte,
+        filtroLeitor = leitorFiltro,
+        filtroMidia = midiaFiltro,
+    ) => {
         try {
             setIsLoading(true);
             const query = new URLSearchParams();
@@ -68,6 +100,12 @@ export default function EmprestimosPage() {
             }
             if (filtroDataAte) {
                 query.set('dataInicioAte', filtroDataAte);
+            }
+            if (filtroLeitor) {
+                query.set('leitorNome', filtroLeitor);
+            }
+            if (filtroMidia) {
+                query.set('midiaTitulo', filtroMidia);
             }
 
             const response = await fetch(`/api/emprestimos?${query.toString()}`);
@@ -94,14 +132,16 @@ export default function EmprestimosPage() {
     };
 
     const handleAplicarFiltro = () => {
-        fetchEmprestimos(estadoFiltro, dataInicioDe, dataInicioAte);
+        fetchEmprestimos(estadoFiltro, dataInicioDe, dataInicioAte, leitorFiltro, midiaFiltro);
     };
 
     const handleLimparFiltro = () => {
         setEstadoFiltro("");
         setDataInicioDe("");
         setDataInicioAte("");
-        fetchEmprestimos("", "", "");
+        setLeitorFiltro("");
+        setMidiaFiltro("");
+        fetchEmprestimos("", "", "", "", "");
     };
 
     const handleFinalizarEmprestimo = async (emprestimoId: string) => {
@@ -234,6 +274,38 @@ export default function EmprestimosPage() {
                                     onChange={(event) => setDataInicioAte(event.target.value)}
                                     className="border rounded px-3 py-2"
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Leitor</label>
+                                <input
+                                    type="text"
+                                    list="leitores-list"
+                                    value={leitorFiltro}
+                                    onChange={(event) => setLeitorFiltro(event.target.value)}
+                                    placeholder="Digite o nome do leitor"
+                                    className="border rounded px-3 py-2 w-full"
+                                />
+                                <datalist id="leitores-list">
+                                    {leitoresOptions.map((leitor) => (
+                                        <option key={leitor.id} value={leitor.nome} />
+                                    ))}
+                                </datalist>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Mídia</label>
+                                <input
+                                    type="text"
+                                    list="midias-list"
+                                    value={midiaFiltro}
+                                    onChange={(event) => setMidiaFiltro(event.target.value)}
+                                    placeholder="Digite o título da mídia"
+                                    className="border rounded px-3 py-2 w-full"
+                                />
+                                <datalist id="midias-list">
+                                    {midiasOptions.map((midia) => (
+                                        <option key={midia.id} value={midia.titulo} />
+                                    ))}
+                                </datalist>
                             </div>
                             <div className="flex gap-2">
                                 <button

@@ -95,15 +95,27 @@ export async function GET(request: NextRequest) {
     const estado = searchParams.get("estado") || undefined;
     const dataInicioDeParam = searchParams.get("dataInicioDe") || undefined;
     const dataInicioAteParam = searchParams.get("dataInicioAte") || undefined;
+    const leitorNome = searchParams.get("leitorNome") || undefined;
+    const midiaTitulo = searchParams.get("midiaTitulo") || undefined;
 
     const filters: {
       estado?: string;
       dataInicioDe?: Date;
       dataInicioAte?: Date;
+      leitorNome?: string;
+      midiaTitulo?: string;
     } = {};
 
     if (estado) {
       filters.estado = estado;
+    }
+
+    if (leitorNome) {
+      filters.leitorNome = leitorNome;
+    }
+
+    if (midiaTitulo) {
+      filters.midiaTitulo = midiaTitulo;
     }
 
     if (dataInicioDeParam) {
