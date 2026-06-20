@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -9,7 +9,9 @@ interface InputProps
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, className = "", id, ...props }, ref) => {
-    const generatedId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    //useId garante o MESMO ID estável tanto no Servidor quanto no Cliente
+    const reactId = useId();
+    const generatedId = id || `input-${reactId}`;
 
     return (
       <div className="w-full">
