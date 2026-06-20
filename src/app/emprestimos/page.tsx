@@ -47,15 +47,30 @@ export default function EmprestimosPage() {
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [alert, setAlert] = useState<AlertState>({ show: false, message: '', tipo: 'sucesso' });
     const [isLoading, setIsLoading] = useState(true);
+    const [estadoFiltro, setEstadoFiltro] = useState<string>("");
+    const [dataInicioDe, setDataInicioDe] = useState<string>("");
+    const [dataInicioAte, setDataInicioAte] = useState<string>("");
 
     useEffect(() => {
         fetchEmprestimos();
     }, []);
 
-    const fetchEmprestimos = async () => {
+    const fetchEmprestimos = async (filtroEstado = estadoFiltro, filtroDataDe = dataInicioDe, filtroDataAte = dataInicioAte) => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/emprestimos');
+            const query = new URLSearchParams();
+
+            if (filtroEstado) {
+                query.set('estado', filtroEstado);
+            }
+            if (filtroDataDe) {
+                query.set('dataInicioDe', filtroDataDe);
+            }
+            if (filtroDataAte) {
+                query.set('dataInicioAte', filtroDataAte);
+            }
+
+            const response = await fetch(`/api/emprestimos?${query.toString()}`);
             const data = await response.json();
 
             if (response.ok) {
@@ -76,6 +91,17 @@ export default function EmprestimosPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleAplicarFiltro = () => {
+        fetchEmprestimos(estadoFiltro, dataInicioDe, dataInicioAte);
+    };
+
+    const handleLimparFiltro = () => {
+        setEstadoFiltro("");
+        setDataInicioDe("");
+        setDataInicioAte("");
+        fetchEmprestimos("", "", "");
     };
 
     const handleFinalizarEmprestimo = async (emprestimoId: string) => {
@@ -176,11 +202,62 @@ export default function EmprestimosPage() {
                     Lista de Empréstimos
                 </h1>
                 <div className={"items-center mb-6"}>
-                    <Link href={"/balcao"}>
-                        <div className={"flex justify-end items-center mb-4 mr-6"}>
-                            <button className={"btn-edit"}>Novo Empréstimo</button>
+                    <div className="flex flex-wrap items-end gap-3 justify-between px-6 mb-4">
+                        <div className="flex flex-wrap gap-3 items-end">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Estado</label>
+                                <select
+                                    value={estadoFiltro}
+                                    onChange={(event) => setEstadoFiltro(event.target.value)}
+                                    className="border rounded px-3 py-2"
+                                >
+                                    <option value="">Todos</option>
+                                    <option value="CORRENTE">CORRENTE</option>
+                                    <option value="ATRASADO">ATRASADO</option>
+                                    <option value="FINALIZADO">FINALIZADO</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Data Início de</label>
+                                <input
+                                    type="date"
+                                    value={dataInicioDe}
+                                    onChange={(event) => setDataInicioDe(event.target.value)}
+                                    className="border rounded px-3 py-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Data Início até</label>
+                                <input
+                                    type="date"
+                                    value={dataInicioAte}
+                                    onChange={(event) => setDataInicioAte(event.target.value)}
+                                    className="border rounded px-3 py-2"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    className="btn-edit"
+                                    onClick={handleAplicarFiltro}
+                                >
+                                    Aplicar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn-delete"
+                                    onClick={handleLimparFiltro}
+                                >
+                                    Limpar
+                                </button>
+                            </div>
                         </div>
-                    </Link>
+                        <Link href={"/balcao"}>
+                            <div className={"flex justify-end items-center mb-4 mr-6"}>
+                                <button className={"btn-edit"}>Novo Empréstimo</button>
+                            </div>
+                        </Link>
+                    </div>
                     {emprestimos.length === 0 && (
                         <div className="p-8 text-center text-gray-500">
                             <h1>Nenhum empréstimo encontrado.</h1>

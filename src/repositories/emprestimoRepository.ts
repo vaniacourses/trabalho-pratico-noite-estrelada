@@ -144,8 +144,30 @@ export class EmprestimoRepository {
     /**
      * Lista todos os empréstimos com seus relacionamentos
      */
-    async listarTodos() {
+    async listarTodos(filters?: {
+        estado?: string;
+        dataInicioDe?: Date;
+        dataInicioAte?: Date;
+    }) {
+        const where: any = {};
+
+        if (filters?.estado) {
+            where.estado = filters.estado;
+        }
+
+        if (filters?.dataInicioDe || filters?.dataInicioAte) {
+            where.dataInicio = {};
+
+            if (filters.dataInicioDe) {
+                where.dataInicio.gte = filters.dataInicioDe;
+            }
+            if (filters.dataInicioAte) {
+                where.dataInicio.lte = filters.dataInicioAte;
+            }
+        }
+
         return prisma.emprestimo.findMany({
+            where,
             include: {
                 leitor: true,
                 exemplar: {

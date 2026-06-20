@@ -91,8 +91,57 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const estado = searchParams.get("estado") || undefined;
+    const dataInicioDeParam = searchParams.get("dataInicioDe") || undefined;
+    const dataInicioAteParam = searchParams.get("dataInicioAte") || undefined;
+
+    const filters: {
+      estado?: string;
+      dataInicioDe?: Date;
+      dataInicioAte?: Date;
+    } = {};
+
+    if (estado) {
+      filters.estado = estado;
+    }
+
+    if (dataInicioDeParam) {
+      const dataInicioDe = new Date(dataInicioDeParam);
+      if (Number.isNaN(dataInicioDe.getTime())) {
+        return NextResponse.json(
+          {
+            sucesso: false,
+            erro: {
+              codigo: "VALIDACAO_ERRO",
+              mensagem: "O parâmetro 'dataInicioDe' não é uma data válida",
+            },
+          },
+          { status: 400 }
+        );
+      }
+      filters.dataInicioDe = dataInicioDe;
+    }
+
+    if (dataInicioAteParam) {
+      const dataInicioAte = new Date(dataInicioAteParam);
+      if (Number.isNaN(dataInicioAte.getTime())) {
+        return NextResponse.json(
+          {
+            sucesso: false,
+            erro: {
+              codigo: "VALIDACAO_ERRO",
+              mensagem: "O parâmetro 'dataInicioAte' não é uma data válida",
+            },
+          },
+          { status: 400 }
+        );
+      }
+      filters.dataInicioAte = dataInicioAte;
+    }
+
     const emprestimoService = new EmprestimoService();
-    const emprestimos = await emprestimoService.listarTodos();
+    const emprestimos = await emprestimoService.listarTodos(filters);
 
     return NextResponse.json(
       {
