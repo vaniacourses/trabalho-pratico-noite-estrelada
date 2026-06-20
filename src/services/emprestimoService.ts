@@ -120,6 +120,13 @@ export class EmprestimoService {
     }
 
     /**
+     * Lista todos os empréstimos
+     */
+    async listarTodos() {
+        return this.repository.listarTodos();
+    }
+
+    /**
      * Calcularão a data de expiração do empréstimo
      */
     private calcularDataExpiracao(diasEmprestimo: number): Date {

@@ -85,39 +85,24 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/emprestimos/:id
+ * GET /api/emprestimos
  *
- * Busca um empréstimo específico por ID
+ * Lista todos os empréstimos
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        {
-          erro: {
-            codigo: "VALIDACAO_ERRO",
-            mensagem: "O parâmetro 'id' é obrigatório",
-          },
-        },
-        { status: 400 }
-      );
-    }
-
     const emprestimoService = new EmprestimoService();
-    const emprestimo = await emprestimoService.finalizarEmprestimo(id);
+    const emprestimos = await emprestimoService.listarTodos();
 
     return NextResponse.json(
       {
         sucesso: true,
-        dados: emprestimo,
+        dados: emprestimos,
       },
       { status: 200 }
     );
   } catch (erro: any) {
-    console.error("Erro ao buscar empréstimo:", erro);
+    console.error("Erro ao listar empréstimos:", erro);
     return NextResponse.json(
       {
         sucesso: false,

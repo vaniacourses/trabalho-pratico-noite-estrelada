@@ -140,4 +140,23 @@ export class EmprestimoRepository {
             },
         });
     }
+
+    /**
+     * Lista todos os empréstimos com seus relacionamentos
+     */
+    async listarTodos() {
+        return prisma.emprestimo.findMany({
+            include: {
+                leitor: true,
+                exemplar: {
+                    include: {
+                        midia: true,
+                    },
+                },
+            },
+            orderBy: {
+                dataCriacao: "desc",
+            },
+        });
+    }
 }
