@@ -13,7 +13,7 @@ async function main() {
     await prisma.emprestimo.deleteMany();
     await prisma.reserva.deleteMany();
     await prisma.exemplar.deleteMany();
-    await prisma.publicacao.deleteMany();
+    await prisma.midia.deleteMany();
     await prisma.leitor.deleteMany();
 
     // Criar leitores
@@ -45,26 +45,29 @@ async function main() {
       },
     });
 
-    // Criar publicações
-    console.log("Criando publicações...");
-    const publicacao1 = await prisma.publicacao.create({
+    // Criar mídias
+    console.log("Criando mídias...");
+    const midia1 = await prisma.midia.create({
       data: {
-        isbn: "978-0-13-468599-1",
+        tipo: "PUBLICACAO",
         titulo: "Clean Code",
+        dados: { isbn: "978-0-13-468599-1" },
       },
     });
 
-    const publicacao2 = await prisma.publicacao.create({
+    const midia2 = await prisma.midia.create({
       data: {
-        isbn: "978-0-201-63361-0",
+        tipo: "PUBLICACAO",
         titulo: "Design Patterns",
+        dados: { isbn: "978-0-201-63361-0" },
       },
     });
 
-    const publicacao3 = await prisma.publicacao.create({
+    const midia3 = await prisma.midia.create({
       data: {
-        isbn: "978-0-13-235088-4",
+        tipo: "PUBLICACAO",
         titulo: "The Pragmatic Programmer",
+        dados: { isbn: "978-0-13-235088-4" },
       },
     });
 
@@ -72,28 +75,28 @@ async function main() {
     console.log("Criando exemplares...");
     const exemplar1 = await prisma.exemplar.create({
       data: {
-        idPublicacao: publicacao1.id,
+        idMidia: midia1.id,
         estado: "DISPONIVEL",
       },
     });
 
     const exemplar2 = await prisma.exemplar.create({
       data: {
-        idPublicacao: publicacao1.id,
+        idMidia: midia1.id,
         estado: "DISPONIVEL",
       },
     });
 
     const exemplar3 = await prisma.exemplar.create({
       data: {
-        idPublicacao: publicacao2.id,
+        idMidia: midia2.id,
         estado: "DISPONIVEL",
       },
     });
 
     const exemplar4 = await prisma.exemplar.create({
       data: {
-        idPublicacao: publicacao3.id,
+        idMidia: midia3.id,
         estado: "DISPONIVEL",
       },
     });
@@ -141,14 +144,13 @@ async function main() {
 
     // Criar reservas
     console.log("Criando reservas...");
-    const dataExpiracaoReserva = new Date();
-    dataExpiracaoReserva.setDate(dataExpiracaoReserva.getDate() + 7);
+    const dataMidia = new Date();
 
     const reserva1 = await prisma.reserva.create({
       data: {
         idLeitor: leitor3.id,
-        idPublicacao: publicacao2.id,
-        dataExpiracao: dataExpiracaoReserva,
+        idMidia: midia2.id,
+        dataMidia,
         estado: "EM_ESPERA",
       },
     });
@@ -156,7 +158,7 @@ async function main() {
     console.log("✅ Seed concluído com sucesso!");
     console.log("\n📊 Resumo dos dados criados:");
     console.log(`- Leitores: 3`);
-    console.log(`- Publicações: 3`);
+    console.log(`- Mídias: 3`);
     console.log(`- Exemplares: 4`);
     console.log(`- Empréstimos: 2`);
     console.log(`- Reservas: 1`);
