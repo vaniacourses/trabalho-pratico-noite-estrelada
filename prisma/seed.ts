@@ -101,20 +101,30 @@ async function main() {
 
     // Exemplares
     console.log("Criando exemplares...");
+    function genCodigo(prefix: string, i: number) {
+      const clean = prefix.replace(/\s+/g, "").slice(0, 6).toUpperCase();
+      return `${clean}-${Date.now().toString().slice(-5)}-${i}`;
+    }
+
     const exemplar1 = await prisma.exemplar.create({
-      data: { idMidia: midia1.id, estado: "DISPONIVEL" },
+      data: { idMidia: midia1.id, codigo: genCodigo(midia1.titulo, 1), estado: "DISPONIVEL" },
     });
 
     const exemplar2 = await prisma.exemplar.create({
-      data: { idMidia: midia1.id, estado: "DISPONIVEL" },
+      data: { idMidia: midia1.id, codigo: genCodigo(midia1.titulo, 2), estado: "DISPONIVEL" },
     });
 
     const exemplar3 = await prisma.exemplar.create({
-      data: { idMidia: midia2.id, estado: "DISPONIVEL" },
+      data: { idMidia: midia2.id, codigo: genCodigo(midia2.titulo, 1), estado: "DISPONIVEL" },
     });
 
     const exemplar4 = await prisma.exemplar.create({
-      data: { idMidia: midia3.id, estado: "DISPONIVEL" },
+      data: { idMidia: midia3.id, codigo: genCodigo(midia3.titulo, 1), estado: "DISPONIVEL" },
+    });
+
+    // Garantir exemplar para a midia4 (CD)
+    const exemplar5 = await prisma.exemplar.create({
+      data: { idMidia: midia4.id, codigo: genCodigo(midia4.titulo, 1), estado: "DISPONIVEL" },
     });
 
     // Empréstimos
@@ -160,7 +170,7 @@ async function main() {
     console.log("\n📊 Resumo:");
     console.log("  Usuários: 5 (3 leitores, 1 atendente, 1 gerente)");
     console.log("  Mídias: 4 (2 publicações, 1 DVD, 1 CD)");
-    console.log("  Exemplares: 4");
+    console.log("  Exemplares: 5");
     console.log("  Empréstimos: 2");
     console.log("  Reservas: 1");
     console.log("\n🔑 Credenciais de teste:");
