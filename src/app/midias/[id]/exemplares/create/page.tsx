@@ -7,6 +7,7 @@ import {Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components
 import {Input} from "@/components/ui/Input.tsx";
 import {Button} from "@/components/ui/Button.tsx";
 import {Alert} from "@/components/ui/Alert.tsx";
+import Link from "next/link";
 
 interface AlertState {
     show: boolean;
@@ -22,6 +23,7 @@ export default function CreateExemplarPage() {
     const [fieldError, setFieldError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
+    const [createdExemplar, setCreatedExemplar] = useState<{ id: string; idMidia?: string } | null>(null);
 
     const validate = () => {
         if (!codigo.trim()) { setFieldError("Código do exemplar é obrigatório"); return false; }
@@ -52,9 +54,9 @@ export default function CreateExemplarPage() {
                 setAlert({show: true, message: firstError || 'Erro ao criar exemplar', tipo: 'erro', erros});
                 return;
             }
-
-            sessionStorage.setItem('successMessage', 'Exemplar criado com sucesso!');
-            router.push(`/midias/${id}/exemplares`);
+            const exemplar = data.dados;
+            setCreatedExemplar(exemplar || null);
+            setAlert({show: true, message: 'Exemplar criado com sucesso!', tipo: 'sucesso'});
         } catch {
             setAlert({show: true, message: 'Erro ao conectar com o servidor.', tipo: 'erro'});
         } finally {
@@ -121,9 +123,16 @@ export default function CreateExemplarPage() {
                     </CardContent>
 
                     <CardFooter>
-                        <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
-                            Cancelar
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+                                Cancelar
+                            </Button>
+                            {createdExemplar && (
+                                <Link href={`/exemplares/${createdExemplar.id}`}>
+                                    <Button variant="primary">Visualizar Exemplar</Button>
+                                </Link>
+                            )}
+                        </div>
                     </CardFooter>
                 </Card>
             </div>

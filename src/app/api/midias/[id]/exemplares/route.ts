@@ -71,7 +71,10 @@ export async function POST(
     {params}: { params: { id?: string } }
 ) {
     try {
-        const idMidia = params?.id || new URL(request.url).searchParams.get("id");
+        const body = await request.json();
+
+        // Prefer path param, then body.idMidia, then query param
+        const idMidia = params?.id || body?.idMidia || new URL(request.url).searchParams.get("id");
 
         if (!idMidia) {
             return NextResponse.json(
@@ -85,8 +88,6 @@ export async function POST(
                 {status: 400}
             );
         }
-
-        const body = await request.json();
 
         const exemplar = await exemplarService.criarExemplar({
             idMidia,

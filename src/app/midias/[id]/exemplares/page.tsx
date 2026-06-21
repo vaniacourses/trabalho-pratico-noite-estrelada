@@ -220,15 +220,13 @@ export default function ExemplarListPage() {
                                     <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Estado</th>
                                     <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Data de Criação</th>
                                     <th className="text-left py-2 px-4 text-brand-secondary font-semibold">Data de Atualização</th>
-                                    {isFuncionario && (
-                                        <th className="text-right py-2 px-4 text-brand-secondary font-semibold">Ações</th>
-                                    )}
+                                    <th className="text-right py-2 px-4 text-brand-secondary font-semibold">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paginado.length === 0 ? (
                                     <tr>
-                                        <td colSpan={isFuncionario ? 5 : 4} className="py-6 text-center text-sm text-brand-secondary/60">
+                                        <td colSpan={5} className="py-6 text-center text-sm text-brand-secondary/60">
                                             {filtrado.length === 0 && exemplares.length > 0
                                                 ? "Nenhum resultado para os filtros aplicados."
                                                 : "Nenhum exemplar encontrado."}
@@ -244,24 +242,29 @@ export default function ExemplarListPage() {
                                         </td>
                                         <td className="py-3 px-4 text-brand-text">{formatDate(exemplar.dataCriacao)}</td>
                                         <td className="py-3 px-4 text-brand-text">{formatDate(exemplar.dataAtualizacao)}</td>
-                                        {isFuncionario && (
-                                            <td className="py-3 px-4">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Link href={`/midias/${midiaId}/exemplares/${exemplar.id}/edit`}>
-                                                        <Button variant="outline" size="sm">Editar</Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="secondary"
-                                                        size="sm"
-                                                        loading={loadingId === exemplar.id}
-                                                        onClick={() => handleExcluir(exemplar.id)}
-                                                        className="!bg-brand-error hover:!bg-brand-error/90"
-                                                    >
-                                                        Excluir
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        )}
+                                        <td className="py-3 px-4">
+                                            <div className="flex flex-wrap items-center justify-end gap-2">
+                                                <Link href={`/midias/${midiaId}/exemplares/${exemplar.id}`}>
+                                                    <Button variant="outline" size="sm">Visualizar</Button>
+                                                </Link>
+                                                {isFuncionario && (
+                                                    <>
+                                                        <Link href={`/midias/${midiaId}/exemplares/${exemplar.id}/edit`}>
+                                                            <Button variant="outline" size="sm">Editar</Button>
+                                                        </Link>
+                                                        <Button
+                                                            variant="secondary"
+                                                            size="sm"
+                                                            loading={loadingId === exemplar.id}
+                                                            onClick={() => handleExcluir(exemplar.id)}
+                                                            className="!bg-brand-error hover:!bg-brand-error/90"
+                                                        >
+                                                            Excluir
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
