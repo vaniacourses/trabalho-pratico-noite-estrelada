@@ -74,7 +74,8 @@ export default function LeitoresPage() {
 
             if (response.ok) {
                 // Remove deleted leitor from list
-                setLeitores(leitores.filter(l => l.id !== leitorId));
+                // updater funcional evita closure stale em deletes concorrentes
+                setLeitores(prev => prev.filter(l => l.id !== leitorId));
                 setAlert({
                     show: true,
                     message: data.mensagem || 'Leitor deletado com sucesso',
@@ -93,6 +94,9 @@ export default function LeitoresPage() {
                 message: erro.message || 'Erro ao deletar leitor',
                 tipo: 'erro'
             });
+        } finally {
+            // sem o reset o botão ficaria preso em "Deletando..." se o DELETE falhar
+            setLoadingId(null);
         }
     };
 

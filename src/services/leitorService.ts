@@ -54,7 +54,7 @@ export class LeitorService {
         return this.mapearParaResponse(leitor);
     }
 
-    async atualizarLeitor(id: string, data: ILeitorDTO): Promise<Leitor> {
+    async atualizarLeitor(id: string, data: ILeitorUpdateDTO): Promise<Leitor> {
         try {
             const {
                 nome,

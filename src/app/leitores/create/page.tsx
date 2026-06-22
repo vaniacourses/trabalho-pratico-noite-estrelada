@@ -13,8 +13,9 @@ function CreateLeitorForm() {
     const fromLogin = searchParams.get("from") === "login";
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // relações (emprestimos, reservas) removidas do Omit — não existem no tipo base Prisma
     const handleCreateLeitor = async (
-        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">
+        data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao">
     ) => {
         setIsSubmitting(true);
         try {

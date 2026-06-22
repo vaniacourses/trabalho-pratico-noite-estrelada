@@ -42,20 +42,19 @@ export interface IExemplarDTO {
     tipo: EstadoExemplar;
 }
 
-
 export interface IRealizarEmprestimoDTO {
-    idLeitor: string;
-    idExemplar: string;
-    diasEmprestimo?: number;
+  idLeitor: string;
+  idExemplar: string;
+  diasEmprestimo?: number;
 }
 
 export interface IEmprestimoResponse {
-    id: string;
-    idLeitor: string;
-    idExemplar: string;
-    dataInicio: Date;
-    dataExpiracao: Date;
-    estado: string;
+  id: string;
+  idLeitor: string;
+  idExemplar: string;
+  dataInicio: Date;
+  dataExpiracao: Date;
+  estado: string;
 }
 
 export interface IErroAplicacao {

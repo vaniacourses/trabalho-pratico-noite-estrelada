@@ -11,7 +11,7 @@ import {formatCpf, normalizarCpf} from "@/utils/helpers";
 interface LeitorFormProps {
     initialData?: Leitor;
     formMode: "create" | "edit";
-    onSubmit: (data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao" | "emprestimos" | "reservas">) => void;
+    onSubmit: (data: Omit<Leitor, "id" | "estado" | "dataCriacao" | "dataAtualizacao">) => void;
     isSubmitting: boolean;
     backHref?: string;
 }
