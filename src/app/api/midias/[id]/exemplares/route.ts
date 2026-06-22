@@ -7,10 +7,11 @@ const exemplarService = new ExemplarService();
 // GET /api/midias/:id/exemplares
 export async function GET(
     request: NextRequest,
-    {params}: { params: { id?: string } }
+    {params}: { params: Promise<{ id?: string }> }
 ) {
     try {
-        const idMidia = params?.id || new URL(request.url).searchParams.get("id");
+        const resolvedParams = await params;
+        const idMidia = resolvedParams?.id || new URL(request.url).searchParams.get("id");
 
         if (!idMidia) {
             return NextResponse.json(

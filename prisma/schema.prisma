@@ -64,8 +64,8 @@ model Leitor {
   dataCriacao      DateTime     @default(now())
   dataAtualizacao  DateTime     @updatedAt
 
-  emprestimos       Emprestimo[]
-  reservas          Reserva[]
+  emprestimos      Emprestimo[]
+  reservas         Reserva[]
 
   @@map("usuarios")
 }
@@ -73,35 +73,26 @@ model Leitor {
 model Midia {
   id          String      @id @default(cuid())
   tipo        TipoDeMidia @default(PUBLICACAO)
-model Midia {
-  id          String      @id @default(cuid())
-  tipo        TipoDeMidia @default(PUBLICACAO)
   titulo      String
-  dataCriacao DateTime    @default(now())
   dataCriacao DateTime    @default(now())
 
   exemplares Exemplar[]
   reservas   Reserva[]
   dados      Json
-  dados      Json
 
-  @@map("midias")
   @@map("midias")
 }
 
 model Exemplar {
   id              String         @id @default(cuid())
   idMidia         String
-  codigo          String         @unique
   estado          EstadoExemplar @default(DISPONIVEL)
   dataCriacao     DateTime       @default(now())
   dataAtualizacao DateTime       @updatedAt
 
   midia       Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
-  midia       Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
   emprestimos Emprestimo[]
 
-  @@index([idMidia])
   @@index([idMidia])
   @@map("exemplares")
 }
@@ -123,14 +114,11 @@ model Emprestimo {
   @@map("emprestimos")
   @@index([idLeitor])
   @@index([idExemplar])
-
 }
 
 model Reserva {
   id              String        @id @default(cuid())
   idLeitor        String
-  idMidia         String
-  dataMidia       DateTime
   idMidia         String
   dataMidia       DateTime
   estado          EstadoReserva @default(EM_ESPERA)
@@ -139,11 +127,8 @@ model Reserva {
 
   leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
   midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
-  leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
-  midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
 
   @@index([idLeitor])
-  @@index([idMidia])
   @@index([idMidia])
   @@map("reservas")
 }

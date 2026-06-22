@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -10,7 +10,9 @@ interface InputProps
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, rightElement, className = "", id, ...props }, ref) => {
-    const generatedId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    // O hook useId garante o mesmo identificador estável no Servidor e no Navegador
+    const reactId = useId();
+    const generatedId = id || `input-${reactId}`;
 
     return (
       <div className="w-full">
