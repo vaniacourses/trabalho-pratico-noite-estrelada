@@ -26,6 +26,7 @@ export default function ViewMidiaPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
     const [isFuncionario, setIsFuncionario] = useState(false);
+    const [exemplaresList, setExemplaresList] = useState<any[]>([]);
 
     useEffect(() => {
         try {
@@ -47,7 +48,6 @@ export default function ViewMidiaPage() {
 
     useEffect(() => {
         if (!id) return;
-
         const fetchMidia = async () => {
             try {
                 setIsLoading(true);
@@ -65,7 +65,18 @@ export default function ViewMidiaPage() {
             }
         };
 
+        const fetchExemplares = async () => {
+            try {
+                const r = await fetch(`/api/midias/${id}/exemplares`);
+                const json = await r.json();
+                if (r.ok) setExemplaresList(json.dados || []);
+            } catch (e) {
+                // ignore—optional
+            }
+        };
+
         fetchMidia();
+        fetchExemplares();
     }, [id]);
 
     const renderDetalhe = (label: string, valor: React.ReactNode) => (
@@ -211,11 +222,45 @@ export default function ViewMidiaPage() {
                             <p className="text-sm text-brand-text/70 mb-4">
                                 Veja todos os exemplares físicos desta mídia disponíveis no acervo.
                             </p>
-                            <Link href={`/midias/${midia.id}/exemplares`}>
-                                <Button variant="primary" className="w-full">
-                                    Lista de Exemplares
-                                </Button>
-                            </Link>
+                            <div>
+                                <div className="mb-4 flex items-center justify-between">
+                                    <Link href={`/midias/${midia.id}/exemplares/create`}>
+                                        <Button variant="primary" className="">+ Novo Exemplar</Button>
+                                    </Link>
+                                    <span className="text-sm text-brand-secondary">{exemplaresList.length} exemplares</span>
+                                </div>
+
+                                {exemplaresList.length === 0 ? (
+                                    <p className="text-sm text-brand-secondary">Nenhum exemplar cadastrado para esta mídia.</p>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="text-left text-xs text-brand-secondary uppercase">
+                                                    <th className="px-3 py-2">Código</th>
+                                                    <th className="px-3 py-2">Estado</th>
+                                                    <th className="px-3 py-2">Criado</th>
+                                                    <th className="px-3 py-2">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {exemplaresList.map((ex: any) => (
+                                                    <tr key={ex.id} className="border-t">
+                                                        <td className="px-3 py-2">{ex.codigo}</td>
+                                                        <td className="px-3 py-2">{ex.estado}</td>
+                                                        <td className="px-3 py-2">{new Date(ex.dataCriacao).toLocaleString('pt-BR')}</td>
+                                                        <td className="px-3 py-2">
+                                                            <Link href={`/exemplares/${ex.id}`} className="inline-block">
+                                                                <button className="text-sm px-3 py-1 rounded border border-brand-secondary/30 hover:bg-brand-bg">Visualizar</button>
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
