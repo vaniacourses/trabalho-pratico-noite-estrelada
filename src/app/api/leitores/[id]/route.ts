@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LeitorService } from "@/services/leitorService";
+import { leitorService } from "@/container/leitor.container";
 import type { IErroAplicacao } from "@/types";
 
 // GET /api/leitores/:id
@@ -22,7 +22,6 @@ export async function GET(
       );
     }
 
-    const leitorService = new LeitorService();
     const leitor = await leitorService.obterLeitorPorId(id);
 
     return NextResponse.json(
@@ -84,7 +83,6 @@ export async function PUT(
 
     const body = await request.json();
 
-    const leitorService = new LeitorService();
     const leitor = await leitorService.atualizarLeitor(id, body);
 
     return NextResponse.json(
@@ -144,7 +142,6 @@ export async function DELETE(
       );
     }
 
-    const leitorService = new LeitorService();
     await leitorService.deletarLeitor(id);
 
     return NextResponse.json(

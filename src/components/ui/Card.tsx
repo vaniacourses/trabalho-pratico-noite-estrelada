@@ -34,7 +34,7 @@ export const CardContent: React.FC<{ children: React.ReactNode }> = ({
 export const CardFooter: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
-  <div className="mt-6 pt-4 border-t border-brand-secondary/20 flex gap-2">
+  <div className="mt-6 pt-4 border-t border-brand-secondary/20 flex items-center gap-2">
     {children}
   </div>
 );

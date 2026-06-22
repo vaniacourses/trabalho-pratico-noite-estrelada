@@ -4,7 +4,9 @@ import {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
 import {MidiaForm} from "@/components/midias/MidiaForm.tsx";
 import {Midia} from "@prisma/client";
-import {Card, CardContent} from "@/components/ui/Card.tsx";
+import {AuthenticatedLayout} from "@/components/layout/Layout";
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/Card.tsx";
+import {Alert} from "@/components/ui/Alert.tsx";
 
 interface AlertState {
     show: boolean;
@@ -16,19 +18,18 @@ interface AlertState {
 export default function EditMidiaPage() {
     const {id} = useParams()
     const router = useRouter();
-    const [midia, setLeitor] = useState<any>(null)
+    const [midia, setMidia] = useState<any>(null)
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState<AlertState>({show: false, message: '', tipo: 'sucesso'});
 
     useEffect(() => {
         fetch(`/api/midias/${id}`)
             .then((r) => r.json())
-            .then(setLeitor);
+            .then(setMidia);
     }, [id]);
 
-    // relações (emprestimos, reservas) e 'estado' (inexistente em Midia) removidos do Omit
     const handleUpdateMidia = async (
-        data: Omit<Midia, "id" | "dataCriacao">
+        data: Omit<Midia, "id" | "estado" | "dataCriacao" | "emprestimos" | "reservas">
     ) => {
         setIsSubmitting(true);
         setAlert({show: false, message: '', tipo: 'sucesso'});
@@ -46,9 +47,12 @@ export default function EditMidiaPage() {
 
             if (!response.ok) {
                 const validationErrors = responseData.erro?.erros;
+                const firstError = validationErrors
+                    ? Object.values(validationErrors)[0] as string
+                    : responseData.erro?.mensagem;
                 setAlert({
                     show: true,
-                    message: responseData.erro?.mensagem || 'Erro ao atualizar mídia',
+                    message: firstError || 'Erro ao atualizar mídia',
                     tipo: 'erro',
                     erros: validationErrors
                 });
@@ -73,70 +77,71 @@ export default function EditMidiaPage() {
         }
     };
 
-
     if (!midia) {
-        return (<div>Carregando...</div>);
+        return (
+            <AuthenticatedLayout title="Atualizar Mídia">
+                <div className="flex justify-center items-center py-20 text-brand-secondary">
+                    Carregando...
+                </div>
+            </AuthenticatedLayout>
+        );
     }
+
     return (
-        <div className="w-1/4 mx-auto">
-            <h1 className="text-3xl text-center font-bold mt-6 mb-5">
-                Atualizar Mídia
-            </h1>
+        <AuthenticatedLayout title="Atualizar Mídia" subtitle="Edite as informações da mídia">
+            <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1 mb-4 text-sm text-brand-secondary hover:text-brand-text transition-colors"
+            >
+                ← Voltar
+            </button>
 
             {alert.show && (
-                <div
-                    className={`mb-4 p-4 rounded border-l-4 ${
-                        alert.tipo === 'sucesso' ? `alert-success` : `alert-fail`
-                    }`}
-                    role="alert"
-                >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            {alert.tipo === 'sucesso' ? (
-                                <span className="mr-3 text-lg font-bold">✓</span>
-                            ) : (
-                                <span className="mr-3 text-lg font-bold">✕</span>
-                            )}
-                            <div>
-                                <span>{alert.message}</span>
-                                {alert.erros && Object.keys(alert.erros).length > 0 && (
-                                    <div className="mt-3">
-                                        <p className="text-sm font-semibold mb-2">Houve os seguintes erros na atualização:</p>
-                                        <ul className="list-disc list-inside space-y-1">
-                                            {Object.entries(alert.erros).map(([key, value]) => (
-                                                <li key={key} className="text-sm">{value}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            className={`ml-4 text-lg font-bold hover:opacity-70 transition-opacity ${
-                                alert.tipo === 'sucesso' ? 'text-green-700' : 'text-red-700'
-                            }`}
-                            onClick={() => setAlert(prev => ({...prev, show: false}))}
-                            aria-label="Close"
-                        >
-                            ×
-                        </button>
-                    </div>
+                <div className="mb-6">
+                    <Alert
+                        variant={alert.tipo === 'sucesso' ? 'success' : 'error'}
+                        message={alert.message}
+                        onClose={() => setAlert(prev => ({...prev, show: false}))}
+                    />
                 </div>
             )}
 
-            <Card>
-                <CardContent>
-                    <div>
-                    </div>
-                    <MidiaForm
-                        initialData={
-                            midia.dados
-                        }
-                        formMode={"edit"}
-                        onSubmit={handleUpdateMidia} isSubmitting={isSubmitting}/>
-                </CardContent>
-            </Card>
-        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Formulário */}
+                <div className="lg:col-span-2">
+                    <Card className="shadow-premium">
+                        <CardHeader>
+                            <CardTitle>Dados da Mídia</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <MidiaForm
+                                initialData={midia.dados}
+                                formMode={"edit"}
+                                onSubmit={handleUpdateMidia}
+                                isSubmitting={isSubmitting}
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Informações */}
+                <div>
+                    <Card variant="secondary">
+                        <CardHeader>
+                            <CardTitle>
+                                <span className="text-xl">Sobre a edição</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3 text-sm text-brand-text/70">
+                                <p>Altere os campos desejados e clique em <strong className="text-brand-text">Salvar</strong> para confirmar.</p>
+                                <p>O <strong className="text-brand-text">tipo</strong> da mídia não pode ser alterado após a criação.</p>
+                                <p>Campos marcados com <strong className="text-brand-text">*</strong> são obrigatórios.</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </AuthenticatedLayout>
     );
 }

@@ -13,8 +13,7 @@ import {CardFooter} from "@/components/ui/Card.tsx";
 interface MidiaFormProps {
     initialData?: Midia;
     formMode: "create" | "edit";
-    // relações (exemplares, reservas) removidas do Omit — não existem no tipo base Prisma
-    onSubmit: (data: Omit<Midia, "id" | "dataCriacao">) => void;
+    onSubmit: (data: Omit<Midia, "id" | "dataCriacao" | "exemplares" | "reservas">) => void;
     isSubmitting: boolean;
 }
 
@@ -39,13 +38,10 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
     const [dados, setDados] = useState<any>(initialData?.dados ?? defaultDadosFor(initialTipo));
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-    // Ensure when switching type (on create) the dados fields update to the right shape
+    // Reset dados to clean defaults when the type changes on create (avoids stale fields leaking)
     useEffect(() => {
         if (!initialData) {
-            setDados((prev: any) => {
-                const defaults = defaultDadosFor(tipo);
-                return {...defaults, ...prev};
-            });
+            setDados(defaultDadosFor(tipo));
         }
     }, [tipo, initialData]);
 
@@ -132,94 +128,87 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
         switch (tipo) {
             case "PUBLICACAO":
                 return (
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                         <div>
-                            <label htmlFor="autor" className="block text-sm font-medium text-gray-700">Autor *</label>
+                            <label htmlFor="autor" className="block text-sm font-semibold text-brand-text mb-2">Autor *</label>
                             <Input id="autor" type="text" value={dados.autor || ""}
-                                   onChange={(e: any) => setDados({...dados, autor: e.target.value})}/>
-                            {errors.autor && <p className="text-red-500 text-sm mt-1">{errors.autor}</p>}
+                                   onChange={(e: any) => setDados({...dados, autor: e.target.value})}
+                                   error={errors.autor}/>
                         </div>
 
                         <div>
-                            <label htmlFor="isbn" className="block text-sm font-medium text-gray-700">ISBN *</label>
+                            <label htmlFor="isbn" className="block text-sm font-semibold text-brand-text mb-2">ISBN *</label>
                             <Input id="isbn" type="text" value={dados.isbn || ""}
-                                   onChange={(e: any) => setDados({...dados, isbn: e.target.value})}/>
-                            {errors.isbn && <p className="text-red-500 text-sm mt-1">{errors.isbn}</p>}
+                                   onChange={(e: any) => setDados({...dados, isbn: e.target.value})}
+                                   error={errors.isbn}/>
                         </div>
 
                         <div>
-                            <label htmlFor="paginas" className="block text-sm font-medium text-gray-700">Páginas
-                                *</label>
+                            <label htmlFor="paginas" className="block text-sm font-semibold text-brand-text mb-2">Páginas *</label>
                             <Input id="paginas" type="number" value={dados.paginas || ""}
-                                   onChange={(e: any) => setDados({...dados, paginas: e.target.value})}/>
-                            {errors.paginas && <p className="text-red-500 text-sm mt-1">{errors.paginas}</p>}
+                                   onChange={(e: any) => setDados({...dados, paginas: e.target.value})}
+                                   error={errors.paginas}/>
                         </div>
                     </div>
                 );
 
             case "CD":
                 return (
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                         <div>
-                            <label htmlFor="artista" className="block text-sm font-medium text-gray-700">Artista
-                                *</label>
+                            <label htmlFor="artista" className="block text-sm font-semibold text-brand-text mb-2">Artista *</label>
                             <Input id="artista" type="text" value={dados.artista || ""}
-                                   onChange={(e: any) => setDados({...dados, artista: e.target.value})}/>
-                            {errors.artista && <p className="text-red-500 text-sm mt-1">{errors.artista}</p>}
+                                   onChange={(e: any) => setDados({...dados, artista: e.target.value})}
+                                   error={errors.artista}/>
                         </div>
 
                         <div>
-                            <label htmlFor="faixas" className="block text-sm font-medium text-gray-700">Faixas * <span
-                                className="text-xs text-gray-500">(coloque no formato faixa:duracao,...)</span></label>
+                            <label htmlFor="faixas" className="block text-sm font-semibold text-brand-text mb-2">Faixas * <span
+                                className="text-xs font-normal text-brand-secondary">(coloque no formato faixa:duracao,...)</span></label>
                             <Input id="faixas" type="text" value={dados.faixas || ""}
-                                   onChange={(e: any) => setDados({...dados, faixas: e.target.value})}/>
-                            {errors.faixas && <p className="text-red-500 text-sm mt-1">{errors.faixas}</p>}
+                                   onChange={(e: any) => setDados({...dados, faixas: e.target.value})}
+                                   error={errors.faixas}/>
                         </div>
 
                         <div>
-                            <label htmlFor="duracao" className="block text-sm font-medium text-gray-700">Duração
-                                (minutos) *</label>
+                            <label htmlFor="duracao" className="block text-sm font-semibold text-brand-text mb-2">Duração (minutos) *</label>
                             <Input id="duracao" type="number" value={dados.duracao || ""}
-                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}/>
-                            {errors.duracao && <p className="text-red-500 text-sm mt-1">{errors.duracao}</p>}
+                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}
+                                   error={errors.duracao}/>
                         </div>
                     </div>
                 );
 
             case "DVD":
                 return (
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                         <div>
-                            <label htmlFor="diretor" className="block text-sm font-medium text-gray-700">Diretor
-                                *</label>
+                            <label htmlFor="diretor" className="block text-sm font-semibold text-brand-text mb-2">Diretor *</label>
                             <Input id="diretor" type="text" value={dados.diretor || ""}
-                                   onChange={(e: any) => setDados({...dados, diretor: e.target.value})}/>
-                            {errors.diretor && <p className="text-red-500 text-sm mt-1">{errors.diretor}</p>}
+                                   onChange={(e: any) => setDados({...dados, diretor: e.target.value})}
+                                   error={errors.diretor}/>
                         </div>
 
                         <div>
-                            <label htmlFor="codigoDeRegiao" className="block text-sm font-medium text-gray-700">Código
-                                de Região *</label>
+                            <label htmlFor="codigoDeRegiao" className="block text-sm font-semibold text-brand-text mb-2">Código de Região *</label>
                             <Input id="codigoDeRegiao" type="text" value={dados.codigoDeRegiao || ""}
-                                   onChange={(e: any) => setDados({...dados, codigoDeRegiao: e.target.value})}/>
-                            {errors.codigoDeRegiao &&
-                                <p className="text-red-500 text-sm mt-1">{errors.codigoDeRegiao}</p>}
+                                   onChange={(e: any) => setDados({...dados, codigoDeRegiao: e.target.value})}
+                                   error={errors.codigoDeRegiao}/>
                         </div>
 
                         <div>
-                            <label htmlFor="legendas" className="block text-sm font-medium text-gray-700">Legendas
-                                * <span className="text-xs text-gray-500">(separe por vírgula)</span></label>
+                            <label htmlFor="legendas" className="block text-sm font-semibold text-brand-text mb-2">Legendas * <span
+                                className="text-xs font-normal text-brand-secondary">(separe por vírgula)</span></label>
                             <Input id="legendas" type="text" value={dados.legendas || ""}
-                                   onChange={(e: any) => setDados({...dados, legendas: e.target.value})}/>
-                            {errors.legendas && <p className="text-red-500 text-sm mt-1">{errors.legendas}</p>}
+                                   onChange={(e: any) => setDados({...dados, legendas: e.target.value})}
+                                   error={errors.legendas}/>
                         </div>
 
                         <div>
-                            <label htmlFor="duracao" className="block text-sm font-medium text-gray-700">Duração
-                                (minutos) *</label>
+                            <label htmlFor="duracao" className="block text-sm font-semibold text-brand-text mb-2">Duração (minutos) *</label>
                             <Input id="duracao" type="number" value={dados.duracao || ""}
-                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}/>
-                            {errors.duracao && <p className="text-red-500 text-sm mt-1">{errors.duracao}</p>}
+                                   onChange={(e: any) => setDados({...dados, duracao: e.target.value})}
+                                   error={errors.duracao}/>
                         </div>
                     </div>
                 );
@@ -230,18 +219,18 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-                <label htmlFor="titulo" className="block text-sm font-medium text-gray-700">Título *</label>
-                <Input id="titulo" type="text" value={titulo} onChange={(e: any) => setTitulo(e.target.value)}/>
-                {errors.titulo && <p className="text-red-500 text-sm mt-1">{errors.titulo}</p>}
+                <label htmlFor="titulo" className="block text-sm font-semibold text-brand-text mb-2">Título *</label>
+                <Input id="titulo" type="text" value={titulo} onChange={(e: any) => setTitulo(e.target.value)}
+                       error={errors.titulo}/>
             </div>
 
             {formMode === "create" ? (
                 <div>
-                    <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">Tipo</label>
+                    <label htmlFor="tipo" className="block text-sm font-semibold text-brand-text mb-2">Tipo</label>
                     <select id="tipo" value={tipo} onChange={(e: any) => setTipo(e.target.value as TipoDeMidia)}
-                            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3">
+                            className="input-field">
                         <option value="PUBLICACAO">Publicação</option>
                         <option value="CD">CD</option>
                         <option value="DVD">DVD</option>
@@ -249,22 +238,22 @@ export function MidiaForm({initialData, formMode, onSubmit, isSubmitting}: Midia
                 </div>
             ) : (
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Tipo</label>
+                    <label className="block text-sm font-semibold text-brand-text mb-2">Tipo</label>
                     <input type="text" readOnly value={mediaTranslate[tipo]}
-                           className="mt-1 block w-full rounded-md p-3 border-gray-200 bg-gray-100 text-gray-700"/>
+                           className="input-field bg-brand-bg text-brand-secondary cursor-not-allowed"/>
                 </div>
             )}
 
             {renderDataFields()}
 
-            <div className={"flex justify-around mx-auto"}>
-                <Button type="submit" disabled={isSubmitting}
-                        className={"btn btn-edit mt-3 w-3/4"}>{isSubmitting ? "Salvando..." : "Salvar"}</Button>
-            </div>
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full">
+                {isSubmitting ? "Salvando..." : "Salvar"}
+            </Button>
 
             <CardFooter>
-                <Link href={formMode === "create" ? "/midias" : `/midias/${initialData?.id}`}
-                      className={"btn btn-delete ml-2"}>Voltar</Link>
+                <Link href={formMode === "create" ? "/midias" : `/midias/${initialData?.id}`}>
+                    <Button type="button" variant="outline">Voltar</Button>
+                </Link>
             </CardFooter>
         </form>
     );

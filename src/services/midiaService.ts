@@ -1,11 +1,7 @@
 import {MidiaRespository} from "@/repositories/midiaRepository.ts";
 import {IErroAplicacao, IMidiaDTO, IMidiaResponse} from "@/types";
-import {Midia} from "@prisma/client";
-import {
-    CdValidationStrategy,
-    DvdValidationStrategy,
-    PublicacaoValidationStrategy
-} from "@/domain/Midia/MidiaValidationStrategy.ts";
+import {Midia, TipoDeMidia} from "@prisma/client";
+import {MidiaValidationStrategyFactory} from "@/domain/Midia/strategy/MidiaValidationStrategyFactory.ts";
 
 export class MidiaService {
     private repository: MidiaRespository;
@@ -20,7 +16,7 @@ export class MidiaService {
 
     async criarMidia(dto: IMidiaDTO): Promise<IMidiaResponse> {
 
-        const strategy = this.detectarStrategy[dto.tipo];
+        const strategy = MidiaValidationStrategyFactory.criar(dto.tipo as TipoDeMidia);
 
         const { erros } = strategy.validar(dto);
 
@@ -39,7 +35,7 @@ export class MidiaService {
 
     async atualizarMidia(id: string, dto: IMidiaDTO): Promise<Midia> {
 
-        const strategy = this.detectarStrategy[dto.tipo];
+        const strategy = MidiaValidationStrategyFactory.criar(dto.tipo as TipoDeMidia);
 
         const { erros } = strategy.validar(dto);
 
@@ -81,7 +77,6 @@ export class MidiaService {
         const midia = await this.repository.obterMidiaPorId(id);
 
         if (!midia) {
-            // código e mensagem corrigidos — era cópia inadvertida do leitorService
             throw this.criarErro(
                 "MIDIA_NAO_ENCONTRADA",
                 "Mídia não encontrada",
@@ -90,14 +85,6 @@ export class MidiaService {
         }
 
         return midia;
-    }
-
-    // chaves como string literal: TipoDeMidia é um string enum (CD="CD" etc.),
-    // mas o enum do Prisma não inicializa no ambiente jsdom dos testes
-    private detectarStrategy: Record<string, CdValidationStrategy | DvdValidationStrategy | PublicacaoValidationStrategy> = {
-        "CD": new CdValidationStrategy(),
-        "DVD": new DvdValidationStrategy(),
-        "PUBLICACAO": new PublicacaoValidationStrategy(),
     }
 
     private mapearParaResponse(midia: any): IMidiaResponse {

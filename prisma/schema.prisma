@@ -26,9 +26,11 @@ enum EstadoExemplar {
 }
 
 enum EstadoEmprestimo {
+  PENDENTE
   CORRENTE
   ATRASADO
   FINALIZADO
+  REJEITADO
 }
 
 enum EstadoReserva {
@@ -43,6 +45,12 @@ enum TipoDeMidia {
   CD
 }
 
+enum TipoUsuario {
+  LEITOR
+  ATENDENTE
+  GERENTE
+}
+
 // Models
 model Leitor {
   id               String       @id @default(cuid())
@@ -51,6 +59,7 @@ model Leitor {
   dataDeNascimento DateTime?
   email            String?
   senha            String
+  tipo             TipoUsuario  @default(LEITOR)
   estado           EstadoLeitor @default(INCOMPLETO)
   dataCriacao      DateTime     @default(now())
   dataAtualizacao  DateTime     @updatedAt
@@ -58,32 +67,41 @@ model Leitor {
   emprestimos       Emprestimo[]
   reservas          Reserva[]
 
-  @@map("leitores")
+  @@map("usuarios")
 }
 
 model Midia {
   id          String      @id @default(cuid())
   tipo        TipoDeMidia @default(PUBLICACAO)
+model Midia {
+  id          String      @id @default(cuid())
+  tipo        TipoDeMidia @default(PUBLICACAO)
   titulo      String
+  dataCriacao DateTime    @default(now())
   dataCriacao DateTime    @default(now())
 
   exemplares Exemplar[]
   reservas   Reserva[]
   dados      Json
+  dados      Json
 
+  @@map("midias")
   @@map("midias")
 }
 
 model Exemplar {
   id              String         @id @default(cuid())
   idMidia         String
+  codigo          String         @unique
   estado          EstadoExemplar @default(DISPONIVEL)
   dataCriacao     DateTime       @default(now())
   dataAtualizacao DateTime       @updatedAt
 
   midia       Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
+  midia       Midia        @relation(fields: [idMidia], references: [id], onDelete: Cascade)
   emprestimos Emprestimo[]
 
+  @@index([idMidia])
   @@index([idMidia])
   @@map("exemplares")
 }
@@ -113,14 +131,19 @@ model Reserva {
   idLeitor        String
   idMidia         String
   dataMidia       DateTime
+  idMidia         String
+  dataMidia       DateTime
   estado          EstadoReserva @default(EM_ESPERA)
   dataCriacao     DateTime      @default(now())
   dataAtualizacao DateTime      @updatedAt
 
   leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
   midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
+  leitor Leitor @relation(fields: [idLeitor], references: [id], onDelete: Cascade)
+  midia  Midia  @relation(fields: [idMidia], references: [id], onDelete: Cascade)
 
   @@index([idLeitor])
+  @@index([idMidia])
   @@index([idMidia])
   @@map("reservas")
 }

@@ -64,16 +64,20 @@
         @apply bg-green-700 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
+    .btn-create {
+        @apply bg-blue-700 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+    }
+
     .btn-delete {
         @apply bg-red-700 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
     .btn-primary {
-        @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+        @apply bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold border-2 border-transparent py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
     .btn-secondary {
-        @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold py-3 px-6 rounded transition-colors duration-200 shadow-soft;
+        @apply bg-brand-secondary hover:bg-brand-text text-white font-semibold border-2 border-transparent py-3 px-6 rounded transition-colors duration-200 shadow-soft;
     }
 
     .btn-outline {
