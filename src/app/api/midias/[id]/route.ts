@@ -5,10 +5,11 @@ import {IErroAplicacao} from "@/types";
 // GET /api/midias/:id
 export async function GET(
     request: NextRequest,
-    {params}: { params: { id?: string } }
+    {params}: { params: Promise<{ id?: string }> }
 ) {
     try {
-        const id = params?.id || new URL(request.url).searchParams.get("id");
+        const resolvedParams = (await params) as { id?: string };
+        const id = resolvedParams?.id || new URL(request.url).searchParams.get("id");
 
         if (!id) {
             return NextResponse.json(
@@ -64,10 +65,11 @@ export async function GET(
 // PUT /api/midias/:id
 export async function PUT(
     request: NextRequest,
-    {params}: { params: { id?: string } }
+    {params}: { params: Promise<{ id?: string }> }
 ) {
     try {
-        const id = params?.id || new URL(request.url).searchParams.get("id");
+        const resolvedParams = (await params) as { id?: string };
+        const id = resolvedParams?.id || new URL(request.url).searchParams.get("id");
 
         if (!id) {
             return NextResponse.json(
@@ -126,10 +128,11 @@ export async function PUT(
 // DELETE /api/midias/:id
 export async function DELETE(
     request: NextRequest,
-    {params}: { params: { id?: string } }
+    {params}: { params: Promise<{ id?: string }> }
 ) {
     try {
-        const id = params?.id || new URL(request.url).searchParams.get("id");
+        const resolvedParams = (await params) as { id?: string };
+        const id = resolvedParams?.id || new URL(request.url).searchParams.get("id");
 
         if (!id) {
             return NextResponse.json(
