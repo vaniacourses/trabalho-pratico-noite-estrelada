@@ -1,5 +1,5 @@
 # 📚 Noite Estrelada - Sistema de Gerenciamento de Biblioteca
-
+Documento editável: https://docs.google.com/document/d/1xyYK01rRsiiZWlqoW-P2um0DU6zoHaY1RvqfDSb7NKs/edit?tab=t.rm4x6q8d9inc#heading=h.hfo8ob9zi9ys
 > **Full-Stack Application** com Next.js, React, TypeScript, Prisma e PostgreSQL  
 > Arquitetura de Camadas + Padrões GRASP + Design System Premium
 
